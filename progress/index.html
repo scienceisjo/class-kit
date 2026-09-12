@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>📊 진도 트래커</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f3ea">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<script src="../config.js"></script>
+<style>
+:root{
+ --paper:#fdf7ea; --paper-hi:#fffdf6; --paper-lo:#f4ead4;
+ --line:#e2d2ae; --line-soft:#efe4ca;
+ --ink:#2f2a20; --ink-dim:#5d5342; --ink-mute:#7d7160;
+ --sun:#e0912b; --leaf:#2f7d55; --leaf-lo:#4a9e70; --sky:#356f95;
+ --jua:"Jua",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+ --body:"Gowun Dodum","Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+ --r:18px; --shadow:0 14px 34px -20px rgba(72,56,24,.5);
+ --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--paper-lo)}
+body{font-family:var(--body);color:var(--ink);min-height:100dvh;line-height:1.65;
+ background:
+  radial-gradient(900px 500px at 88% -6%, rgba(224,145,43,.16), transparent 62%),
+  radial-gradient(760px 460px at 6% 102%, rgba(47,125,85,.13), transparent 58%),
+  var(--paper);
+ -webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px calc(30px + var(--safe-b))}
+.view{display:none;animation:fade .22s ease both}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.view{animation:none}.room{transition:none}}
+.vhead{display:flex;align-items:center;gap:10px;margin:20px 0 2px;flex-wrap:wrap}
+.back{font-family:var(--jua);font-size:14.5px;padding:8px 15px;border-radius:999px;cursor:pointer;
+ border:2px solid var(--line);background:var(--paper-hi);color:var(--ink-dim);flex:none}
+.back:hover{border-color:var(--leaf);color:var(--leaf)}
+.vhead h2{font-family:var(--jua);font-weight:400;font-size:clamp(19px,4.2vw,24px);color:var(--leaf)}
+.vlead{font-size:14px;color:var(--ink-dim);margin:12px 0 2px;line-height:1.75}
+#app-credit{margin-top:28px;padding-top:16px;border-top:1.5px dashed var(--line);
+ text-align:center;font-size:12.2px;color:var(--ink-mute);line-height:1.95}
+#app-credit a{color:var(--ink-mute)}
+.ptabs{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.ptab{font-family:var(--jua);font-size:13.5px;padding:7px 15px;border-radius:999px;cursor:pointer;
+ border:1.5px solid var(--line);background:var(--paper-hi);color:var(--ink-mute)}
+.ptab.on{background:var(--leaf);border-color:var(--leaf);color:#f2fbf5}
+.ptab.add{border-style:dashed;color:var(--ink-mute)}
+
+.ptools{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.pbtn{font-family:var(--body);font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:10px;cursor:pointer;
+ border:1.5px solid var(--line);background:var(--paper-hi);color:var(--ink-dim)}
+.pbtn:hover{border-color:var(--leaf);color:var(--leaf)}
+.pbtn.warn:hover{border-color:#b3423a;color:#b3423a}
+
+.psum{margin-top:14px;border:1.5px solid var(--line);border-radius:var(--r);
+ background:linear-gradient(180deg,var(--paper-hi),var(--paper));padding:15px 16px;box-shadow:var(--shadow)}
+.psum .big{display:flex;align-items:baseline;gap:9px}
+.psum .big .pc{font-family:var(--jua);font-size:31px;color:var(--leaf);line-height:1}
+.psum .big .lb{font-size:13px;color:var(--ink-mute)}
+.pbar{height:11px;border-radius:99px;background:var(--paper-lo);border:1px solid var(--line-soft);
+ overflow:hidden;margin-top:10px}
+.pbar i{display:block;height:100%;border-radius:99px;transition:width .3s;
+ background:linear-gradient(90deg,var(--leaf-lo),var(--leaf))}
+.pnexth{font-size:12.5px;color:var(--ink-mute);margin-top:14px}
+.pnext{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.pchip{font-size:12px;padding:5px 11px;border-radius:99px;border:1px solid var(--line);
+ background:var(--paper-hi);color:var(--ink-dim)}
+.pchip b{color:var(--ink);font-family:var(--jua);font-weight:400}
+.pchip.done{border-color:var(--leaf);background:rgba(47,125,85,.1);color:var(--leaf)}
+.pchip.tight{border-color:#b3423a;background:rgba(179,66,58,.1);color:#b3423a}
+.pchip.tight b{color:#8c212b}
+
+.ptblwrap{margin-top:14px;overflow-x:auto;border:1.5px solid var(--line);border-radius:14px;
+ background:var(--paper-hi);-webkit-overflow-scrolling:touch}
+table.prog{border-collapse:separate;border-spacing:0;font-size:13px}
+.prog th,.prog td{border-bottom:1px solid var(--line-soft);border-right:1px solid var(--line-soft);padding:0}
+.prog tr:last-child th,.prog tr:last-child td{border-bottom:0}
+.prog th.cls,.prog td.cls{position:sticky;left:0;z-index:2;background:var(--paper-hi);
+ min-width:78px;padding:9px 11px;text-align:left;font-family:var(--jua);font-weight:400;
+ box-shadow:2px 0 0 rgba(226,210,174,.55)}
+.prog th.cls small{display:block;font-family:var(--body);font-size:10.5px;color:var(--ink-mute);margin-top:1px}
+.prog thead th{background:var(--paper-lo);vertical-align:top}
+.prog thead th.cls{background:var(--paper-lo)}
+.prog th.lh{min-width:92px;max-width:124px;padding:8px 7px;text-align:center}
+.prog th.lh .ln{display:block;font-size:10.5px;color:var(--ink-mute)}
+.prog th.lh .lt{display:block;font-family:var(--jua);font-weight:400;font-size:12.5px;line-height:1.35;
+ cursor:pointer;margin-top:2px;word-break:keep-all}
+.prog th.lh .lt:hover{color:var(--leaf);text-decoration:underline dotted}
+.prog th.lh .lx{display:flex;gap:3px;justify-content:center;margin-top:6px}
+.prog th.lh .lx button{border:1px solid var(--line);background:var(--paper-hi);border-radius:6px;
+ font-size:10px;line-height:1;padding:3px 6px;cursor:pointer;color:var(--ink-mute)}
+.prog th.lh .lx button:hover{color:var(--leaf);border-color:var(--leaf)}
+.prog th.addcol{min-width:58px;background:var(--paper-lo);border-right:0}
+.prog th.addcol button{font-size:20px;border:none;background:transparent;cursor:pointer;color:var(--leaf);padding:10px 12px}
+.prog td.cell{text-align:center;position:relative}
+.prog td.cell .mm{position:absolute;right:2px;bottom:2px;width:19px;height:19px;line-height:1;
+  border:none;background:transparent;border-radius:5px;cursor:pointer;font-size:11px;
+  color:var(--ink-mute);opacity:.45;padding:0}
+.prog td.cell .mm:hover{opacity:1;background:rgba(112,88,168,.16);color:#7058a8}
+.prog td.cell .mm.has{opacity:1;color:#7058a8;background:rgba(112,88,168,.14)}
+/* 수업 메모 모아보기 */
+.pmemo{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:var(--paper-hi);overflow:hidden}
+.pmemo h4{margin:0;padding:10px 14px;font-family:var(--jua);font-weight:400;font-size:14.5px;
+  background:var(--paper-lo);border-bottom:1px solid var(--line-soft);display:flex;gap:8px;align-items:center}
+.pmemo h4 b{font-family:var(--body);font-size:12.5px;color:var(--ink-mute);font-weight:400}
+.pmemo ul{list-style:none;margin:0;padding:0}
+.pmemo li{display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-bottom:1px solid var(--line-soft);
+  font-size:13.5px;line-height:1.55}
+.pmemo li:last-child{border-bottom:0}
+.pmemo li .who{flex:0 0 auto;font-size:12px;color:var(--ink-mute);min-width:118px}
+.pmemo li .who b{display:block;color:var(--ink);font-size:12.5px}
+.pmemo li .txt{flex:1;cursor:pointer;white-space:pre-wrap;word-break:break-word}
+.pmemo li .txt:hover{color:#7058a8;text-decoration:underline dotted}
+.pmemo .none{padding:12px 14px;font-size:13px;color:var(--ink-mute)}
+.prog td.cell button{display:block;width:100%;min-height:44px;border:none;background:transparent;cursor:pointer;
+ font-size:17px;color:#cdbc98;transition:.12s;font-family:var(--body)}
+.prog td.cell button.on{background:rgba(47,125,85,.15);color:var(--leaf);font-size:19px}
+.prog td.cell button:hover{background:rgba(47,125,85,.08)}
+.prog td.pad{border-right:0}
+.prog tfoot td,.prog tfoot th{background:var(--paper-lo);font-size:11.5px;padding:7px 4px;text-align:center}
+.prog tfoot th.cls{text-align:left;font-size:12px;color:var(--ink-mute)}
+.prog tfoot td.rate{font-family:var(--jua);font-weight:400;color:var(--ink-mute)}
+.prog tfoot td.rate.full{color:var(--leaf)}
+.pick{margin-top:13px;border:2px solid var(--leaf);border-radius:16px;background:var(--paper-hi);padding:15px 16px}
+.pick-h{display:flex;align-items:center;gap:9px;font-family:var(--jua);font-size:16px;color:var(--leaf)}
+.pick-h .x{margin-left:auto;font-family:var(--body);font-size:12.5px;padding:5px 12px;border-radius:99px;
+ border:1.5px solid var(--line);background:var(--paper);color:var(--ink-mute);cursor:pointer}
+.pick-h .x:hover{border-color:#b3423a;color:#b3423a}
+.pkg{margin-top:13px}
+.pkg h4{display:flex;align-items:center;gap:8px;font-family:var(--jua);font-weight:400;font-size:14px;
+ color:var(--ink-dim);padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.pkall{margin-left:auto;font-family:var(--body);font-size:11.5px;padding:4px 11px;border-radius:99px;
+ border:1px solid var(--line);background:var(--paper);color:var(--ink-mute);cursor:pointer;white-space:nowrap}
+.pkall:hover{border-color:var(--leaf);color:var(--leaf)}
+.pkl{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.pk{font-family:var(--body);font-size:13px;padding:7px 13px;border-radius:99px;cursor:pointer;
+ border:1.5px solid var(--line);background:var(--paper);color:var(--ink-dim);transition:.13s}
+.pk:hover{border-color:var(--leaf);color:var(--leaf)}
+.pk.on{background:var(--leaf);border-color:var(--leaf);color:#f2fbf5}
+.pk.has{opacity:.42;cursor:default;border-style:dashed}
+.pick-foot{display:flex;gap:8px;margin-top:15px;padding-top:13px;border-top:1px dashed var(--line);
+ flex-wrap:wrap;align-items:center}
+.pick-foot input{flex:1;min-width:160px;font-family:var(--body);font-size:14px;padding:10px 13px;
+ border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+.pick-foot input:focus{outline:none;border-color:var(--leaf)}
+.pkgo{font-family:var(--jua);font-size:14.5px;padding:10px 22px;border-radius:11px;border:none;
+ background:var(--leaf);color:#f2fbf5;cursor:pointer;white-space:nowrap}
+.pkgo[disabled]{opacity:.45;cursor:default}
+.phint{font-size:12.3px;color:var(--ink-mute);margin-top:12px;line-height:1.85}
+.phint b{color:var(--ink-dim)}
+.pempty{text-align:center;padding:30px 18px;color:var(--ink-mute);font-size:13.5px;line-height:1.9}
+
+/* ── 클라우드 막대 ── */
+.cbar{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border-radius:14px;
+ border:1.5px solid var(--line);background:var(--paper-hi);flex-wrap:wrap}
+.cbar.in{border-color:var(--leaf);background:rgba(47,125,85,.07)}
+.cbar .ci{font-size:21px;flex:none}
+.cbar .ct{flex:1;min-width:150px}
+.cbar .ct b{display:block;font-family:var(--jua);font-weight:400;font-size:14.5px}
+.cbar.in .ct b{color:var(--leaf)}
+.cbar .ct small{display:block;font-size:12px;color:var(--ink-mute);margin-top:1px;word-break:break-all}
+.cstat{flex:none;font-size:11.5px;padding:4px 11px;border-radius:99px;border:1px solid var(--line);
+ color:var(--ink-mute);background:var(--paper-hi);white-space:nowrap}
+.cstat.saving{border-color:var(--sun);color:#a06318;background:rgba(224,145,43,.1)}
+.cstat.saved{border-color:var(--leaf);color:var(--leaf);background:rgba(47,125,85,.1)}
+.cstat.err{border-color:#b3423a;color:#b3423a;background:rgba(179,66,58,.09)}
+.cform{margin-top:10px;padding:14px;border:1.5px dashed var(--line);border-radius:14px;background:var(--paper-hi)}
+.cform label{display:block;font-size:12.5px;color:var(--ink-mute);margin-bottom:4px}
+.cform input{width:100%;font-family:var(--body);font-size:15px;padding:10px 12px;border-radius:10px;
+ border:1.5px solid var(--line);background:var(--paper);color:var(--ink);margin-bottom:10px}
+.cform input:focus{outline:none;border-color:var(--leaf)}
+.cform .crow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cform .cgo{font-family:var(--jua);font-size:14.5px;padding:10px 22px;border-radius:11px;border:none;
+ background:var(--leaf);color:#f2fbf5;cursor:pointer}
+.cform .cgo[disabled]{opacity:.55;cursor:default}
+.cerr{font-size:12.5px;color:#b3423a;margin-top:8px;line-height:1.7}
+.cnote{font-size:12px;color:var(--ink-mute);margin-top:9px;line-height:1.7}
+/* ── 독립판(class-kit) 추가 ── */
+.view{display:block}
+.vhead{justify-content:space-between}
+.kit-banner{margin:10px 0 14px;padding:10px 14px;border:1.5px dashed var(--line);border-radius:var(--r);background:var(--paper-hi);font-size:.9rem;line-height:1.55}
+.kit-banner b{color:var(--ink)}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="view on" id="v-prog">
+  <div class="kit-banner" id="kitBanner" hidden></div>
+  <div class="vhead"><h2>📊 <span id="pTitle">진도 트래커</span></h2><span id="pSchool" style="font-size:.9rem;color:var(--ink-dim)"></span></div>
+  <p class="vlead">칸을 누르면 그 반이 그 차시를 마친 것으로 표시됩니다(수업한 날짜도 함께 기록돼요).
+    차시는 표 오른쪽 <b>＋</b>로 늘리고, 차시 이름을 눌러 고치고, <b>✕</b>로 지울 수 있습니다.</p>
+
+  <div id="pCloud"></div>
+
+  <div class="ptabs" id="pTabs"></div>
+
+  <div class="ptools" id="pTools">
+    <button class="pbtn" type="button" data-cls="1">👥 반 편집</button>
+    <button class="pbtn" type="button" data-per="1">🗓 수업 횟수</button>
+    <button class="pbtn" type="button" data-fill="1">📋 기본 반 넣기</button>
+    <button class="pbtn" type="button" data-rent="1">✏️ 표 이름</button>
+    <button class="pbtn" type="button" data-exp="1">📤 백업</button>
+    <button class="pbtn" type="button" data-imp="1">📥 복원</button>
+    <button class="pbtn warn" type="button" data-delt="1">🗑 표 삭제</button>
+  </div>
+
+  <div id="pSum"></div>
+
+  <div class="pick" id="pPick" hidden>
+    <div class="pick-h">➕ 차시 고르기
+      <button class="x" type="button" data-pkclose="1">닫기</button></div>
+    <div id="pickBody"></div>
+    <div class="pick-foot">
+      <input id="pickCustom" type="text" placeholder="목록에 없으면 여기에 직접 적으세요">
+      <button class="pkgo" type="button" data-pkadd="1" disabled>추가</button>
+    </div>
+  </div>
+
+  <div class="ptblwrap" id="pTable"></div>
+
+  <p class="phint">
+    ☁️ <b>로그인하면</b> 학교 컴퓨터·휴대폰 어디서 열어도 같은 표가 보입니다(질문나무·칭찬도장판과 같은 교사 계정).
+    로그인하지 않으면 이 기기에만 저장돼요 — 그럴 때는 <b>📤 백업 / 📥 복원</b>으로 옮기시면 됩니다.<br>
+    🗓 <b>수업 횟수</b>는 반마다 이번 학기 시간표에서 센 수업 횟수를 적어 두면, 차시 하나에 몇 번을 쓸 수 있는지 계산해 줍니다.<br>
+    📋 <b>기본 반 넣기</b>는 config.js 의 <code>progress.boards</code> 에 적어 둔 반 목록·차시를 채웁니다. 이미 체크한 기록은 건드리지 않아요.<br>
+    🧑‍🏫 이 페이지는 <b>교사용</b>입니다. 학생에게는 주소를 알려주지 마세요.
+  </p>
+  <input type="file" id="pFile" accept="application/json,.json" hidden>
+</section>
+
+<footer id="app-credit">
+  원작 © 2026 조승재(과학이조선생) · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a><br>
+  진도 트래커 · 우리 반 도구 꾸러미
+</footer>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ── 🧰 config.js(window.CLASS_KIT_CONFIG) 읽기 ── */
+const KIT = window.CLASS_KIT_CONFIG || {};
+const kitGet = (path, dflt) => { try{ const v = path.split('.').reduce((o,k)=>(o==null?undefined:o[k]), KIT); return (v===undefined||v===null||v==='') ? dflt : v; }catch(e){ return dflt; } };
+const kitTheme = (section) => { const t = kitGet('theme.'+section, null); if(!t || typeof t!=='object') return; const r=document.documentElement.style; Object.keys(t).forEach(k => { if(t[k]) r.setProperty(k.charAt(0)==='-'?k:'--'+k, String(t[k])); }); };
+const kitFooter = (label) => { if(!window.CLASS_KIT_CONFIG) return; const f=document.getElementById('app-credit'); if(!f) return;
+  const c = KIT.credits||{}, a = c.author||'조승재(과학이조선생)', lic = c.license||'CC BY-NC-SA 4.0';
+  const lu = c.licenseUrl||'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko', au = c.authorUrl||'';
+  const sch = kitGet('school.name',''), tch = kitGet('school.teacher','');
+  f.innerHTML = '원작 © 2026 ' + (au ? '<a href="'+esc(au)+'" target="_blank" rel="noopener">'+esc(a)+'</a>' : esc(a))
+    + ' · <a href="'+esc(lu)+'" target="_blank" rel="noopener">'+esc(lic)+'</a>'
+    + (sch ? ' · 운영: '+esc(sch)+(tch ? ' '+esc(tch)+' 선생님' : '') : '')
+    + '<br>'+esc(label)+' · 우리 반 도구 꾸러미 '+esc(KIT.version||''); };
+
+/* 학기 수업 횟수 대비 — 차시 하나에 몇 번을 쓸 수 있는지 */
+function budgetHTML(C, L){
+  const withP = C.filter(c => c.periods > 0);
+  if(!withP.length) return '';
+  if(!L.length)
+    return '<p class="pnexth">학기 수업 횟수</p><div class="pnext">'
+      + withP.map(c => '<span class="pchip"><b>' + esc(c.name) + '</b> ' + c.periods + '회</span>').join('')
+      + '</div>';
+  const chips = withP.map(c => {
+    const per = c.periods / L.length;
+    return '<span class="pchip' + (per < 1 ? ' tight' : '') + '"><b>' + esc(c.name) + '</b> '
+      + c.periods + '회 · 차시당 ' + per.toFixed(1) + '</span>';
+  }).join('');
+  const min = Math.min.apply(null, withP.map(c => c.periods / L.length));
+  return '<p class="pnexth">학기 수업 횟수 대비 — 차시 ' + L.length + '개를 몇 번에 나눠 쓸 수 있나'
+    + (min < 1 ? ' <b style="color:#b3423a">· 차시가 수업보다 많은 반이 있어요</b>' : '') + '</p>'
+    + '<div class="pnext">' + chips + '</div>';
+}
+/* ══════════════════════════════════════════════════════════════
+   진도 트래커 (교사용) — 자료는 이 기기의 저장 공간에만 들어갑니다.
+   ══════════════════════════════════════════════════════════════ */
+const PKEY = 'sc_prog_v1';
+const uid = () => Math.random().toString(36).slice(2, 9);
+const today = () => { const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+
+/* 처음 열 때 만들어 두는 진도표 — config.js 의 progress.boards
+   [{ name, classes:[[반 이름, 학기 수업 횟수], …], lessons:[차시명, …] }, …] */
+const FIRST_LESSON = '학기 첫 시간';
+const PLAN = (kitGet('progress.boards', null) || [
+  { name:'진도표', classes:[['1반',34],['2반',34],['3반',34]], lessons:[FIRST_LESSON] }
+]).map(p => ({ name:String(p.name||'진도표'),
+               lessons:Array.isArray(p.lessons)&&p.lessons.length ? p.lessons.map(String) : null,
+               classes:(Array.isArray(p.classes)?p.classes:[]).map(x => Array.isArray(x) ? [String(x[0]), Number(x[1])||0] : [String(x), 0]) }));
+function pSeed(){
+  const mk = p => ({ id:uid(), name:p.name, done:{}, memo:{},
+    lessons: (p.lessons || [FIRST_LESSON]).map(n => ({ id:uid(), name:n })),
+    classes: p.classes.map(x => ({ id:uid(), name:x[0], periods:x[1] })) });
+  const t = PLAN.map(mk);
+  return { active:t[0].id, tables:t };
+}
+let P;
+try { P = JSON.parse(localStorage.getItem(PKEY)); } catch(e) { P = null; }
+if(!P || !Array.isArray(P.tables) || !P.tables.length) P = pSeed();
+P.tables.forEach(t => { if(!t.memo || typeof t.memo !== 'object') t.memo = {}; });   /* 옛 자료 보정 */
+
+const pLocal = () => { try { localStorage.setItem(PKEY, JSON.stringify(P)); } catch(e) {} };
+const pSave = (board) => { pLocal(); cloudTouch(board || curT()); };
+const curT = () => P.tables.find(t => t.id === P.active) || P.tables[0];
+
+function drawProg(){
+  const t = curT(); P.active = t.id;
+  const L = t.lessons, C = t.classes;
+  const has = (ci, li) => !!t.done[ci + '|' + li];
+
+  /* 진도표 탭 */
+  $('#pTabs').innerHTML = P.tables.map(x =>
+      '<button class="ptab' + (x.id === t.id ? ' on' : '') + '" type="button" data-t="' + x.id + '">' + esc(x.name) + '</button>'
+    ).join('') + '<button class="ptab add" type="button" data-newt="1">＋ 진도표</button>';
+
+  /* 표 */
+  const head = '<thead><tr><th class="cls">반</th>'
+    + L.map((l, i) =>
+        '<th class="lh"><span class="ln">' + (i + 1) + '차시</span>'
+        + '<span class="lt" data-ren="' + l.id + '" title="눌러서 이름 고치기">' + esc(l.name) + '</span>'
+        + '<span class="lx">'
+        + '<button type="button" data-mv="' + l.id + '" data-d="-1" title="왼쪽으로">‹</button>'
+        + '<button type="button" data-del="' + l.id + '" title="이 차시 지우기">✕</button>'
+        + '<button type="button" data-mv="' + l.id + '" data-d="1" title="오른쪽으로">›</button>'
+        + '</span></th>').join('')
+    + '<th class="addcol"><button type="button" data-addl="1" title="차시 추가">＋</button></th></tr></thead>';
+
+  const body = '<tbody>' + C.map(c => {
+      const n = L.filter(l => has(c.id, l.id)).length;
+      return '<tr><th class="cls">' + esc(c.name)
+        + '<small>' + (L.length ? n + ' / ' + L.length + '차시' : '—')
+        + (c.periods ? ' · 수업 ' + c.periods + '회' : '') + '</small></th>'
+        + L.map(l => { const k = c.id + '|' + l.id, d = t.done[k], mo = (t.memo[k] || '').trim();
+            return '<td class="cell"><button type="button" class="' + (d ? 'on' : '') + '"'
+              + ' data-c="' + c.id + '" data-l="' + l.id + '"'
+              + ' title="' + esc(c.name + ' · ' + l.name + (d ? ' — ' + d + ' 수업함' : ' — 아직')
+                  + (mo ? '\n📝 ' + mo : '')) + '">'
+              + (d ? '✓' : '·') + '</button>'
+              + '<button type="button" class="mm' + (mo ? ' has' : '') + '" data-m="' + k + '"'
+              + ' title="' + esc(mo ? '메모: ' + mo : '이 칸에 메모 적기') + '">'
+              + (mo ? '📝' : '✎') + '</button></td>'; }).join('')
+        + '<td class="pad"></td></tr>'; }).join('') + '</tbody>';
+
+  const foot = '<tfoot><tr><th class="cls">마친 반</th>'
+    + L.map(l => { const n = C.filter(c => has(c.id, l.id)).length;
+        return '<td class="rate' + (n === C.length && n ? ' full' : '') + '">' + n + '/' + C.length + '</td>'; }).join('')
+    + '<td class="pad"></td></tr></tfoot>';
+
+  $('#pTable').innerHTML = L.length
+    ? '<table class="prog">' + head + body + foot + '</table>'
+    : '<table class="prog">' + head + body + '</table>'
+      + '<p class="pempty">아직 차시가 없어요.<br>표 오른쪽 위 <b>＋</b>를 누르면 '
+      + '만들어 둔 <b>차시명 목록</b>에서 골라 담을 수 있어요.</p>';
+
+  /* 요약 */
+  const total = C.length * L.length;
+  const done = C.reduce((a, c) => a + L.filter(l => has(c.id, l.id)).length, 0);
+  const pct = total ? Math.round(done / total * 100) : 0;
+  const chips = C.map(c => {
+      const nx = L.find(l => !has(c.id, l.id));
+      return nx ? '<span class="pchip"><b>' + esc(c.name) + '</b> → ' + esc(nx.name) + '</span>'
+                : '<span class="pchip done"><b>' + esc(c.name) + '</b> 다 마침 ✓</span>'; }).join('');
+  const allDone = L.filter(l => C.every(c => has(c.id, l.id))).length;
+
+  $('#pSum').innerHTML = '<div class="psum">'
+    + '<div class="big"><span class="pc">' + pct + '%</span>'
+    + '<span class="lb">' + C.length + '개 반 × ' + L.length + '차시 중 <b>' + done + '</b>칸 완료'
+    + (L.length ? ' · 모든 반이 마친 차시 <b>' + allDone + '</b>개' : '') + '</span></div>'
+    + '<div class="pbar"><i style="width:' + pct + '%"></i></div>'
+    + (L.length ? '<p class="pnexth">다음에 할 차시</p><div class="pnext">' + chips + '</div>' : '')
+    + budgetHTML(C, L)
+    + '</div>' + memoHTML(t, C, L);
+}
+
+/* 적어 둔 메모를 표 아래에 모아 보여 준다 — "이 반에 뭘 못 했지?"를 한눈에 */
+function memoHTML(t, C, L){
+  const rows = [];
+  C.forEach(c => L.forEach((l, i) => {
+    const mo = (t.memo[c.id + '|' + l.id] || '').trim();
+    if(mo) rows.push({ k:c.id + '|' + l.id, cls:c.name, lesson:(i + 1) + '차시 · ' + l.name, txt:mo });
+  }));
+  return '<div class="pmemo"><h4>📝 수업 메모 <b>'
+    + (rows.length ? rows.length + '개 · 칸의 ✎를 눌러 적습니다' : '칸 오른쪽 아래 ✎를 누르면 적을 수 있어요')
+    + '</b></h4>'
+    + (rows.length
+        ? '<ul>' + rows.map(r =>
+            '<li><span class="who"><b>' + esc(r.cls) + '</b>' + esc(r.lesson) + '</span>'
+            + '<span class="txt" data-m="' + r.k + '" title="눌러서 고치기">' + esc(r.txt) + '</span></li>').join('') + '</ul>'
+        : '<p class="none">안내를 빠뜨렸거나 잘못 알려 준 것, 다음 시간에 챙길 것을 적어 두세요.</p>')
+    + '</div>';
+}
+
+/* ── 조작 ── */
+$('#v-prog').addEventListener('click', e => {
+  const b = e.target.closest('[data-t],[data-newt],[data-addl],[data-ren],[data-del],[data-mv],[data-c],'
+    + '[data-cls],[data-rent],[data-delt],[data-exp],[data-imp],[data-per],[data-fill],[data-m]');
+  if(!b) return;
+  const t = curT(), d = b.dataset;
+
+  if(d.t){ P.active = d.t; closePick(); pSave(); drawProg(); return; }
+
+  if(d.newt){
+    const nm = prompt('새 진도표 이름을 적어 주세요.\n(예: 1학년 기체의 성질)', '새 진도표');
+    if(nm === null || !nm.trim()) return;
+    P.tables.push({ id:uid(), name:nm.trim(),
+      classes:t.classes.map(c => ({ id:uid(), name:c.name })), lessons:[], done:{}, memo:{} });
+    P.active = P.tables[P.tables.length - 1].id; pSave(); drawProg(); return;
+  }
+
+  if(d.addl){ openPick(); return; }
+
+  if(d.ren){
+    const l = t.lessons.find(x => x.id === d.ren); if(!l) return;
+    const nm = prompt('차시 이름 고치기', l.name);
+    if(nm === null || !nm.trim()) return;
+    l.name = nm.trim(); pSave(); drawProg(); return;
+  }
+
+  if(d.del){
+    const l = t.lessons.find(x => x.id === d.del); if(!l) return;
+    const cnt = t.classes.filter(c => t.done[c.id + '|' + l.id]).length;
+    if(!confirm('「' + l.name + '」 차시를 지울까요?' + (cnt ? '\n체크해 둔 ' + cnt + '개 반 기록도 함께 사라집니다.' : ''))) return;
+    t.lessons = t.lessons.filter(x => x.id !== l.id);
+    t.classes.forEach(c => { delete t.done[c.id + '|' + l.id]; delete t.memo[c.id + '|' + l.id]; });
+    pSave(); drawProg(); return;
+  }
+
+  if(d.mv){
+    const i = t.lessons.findIndex(x => x.id === d.mv), j = i + (+d.d);
+    if(i < 0 || j < 0 || j >= t.lessons.length) return;
+    const [x] = t.lessons.splice(i, 1); t.lessons.splice(j, 0, x);
+    pSave(); drawProg(); return;
+  }
+
+  if(d.c){
+    const k = d.c + '|' + d.l;
+    if(t.done[k]) delete t.done[k]; else t.done[k] = today();
+    pSave(); drawProg(); return;
+  }
+
+  if(d.m){
+    const k = d.m, [ci, li] = k.split('|');
+    const c = t.classes.find(x => x.id === ci), l = t.lessons.find(x => x.id === li);
+    if(!c || !l) return;
+    const cur = t.memo[k] || '';
+    const nm = prompt(c.name + ' · ' + l.name + '\n\n이 시간에 있었던 일을 적어 두세요.\n'
+      + '(비우고 확인을 누르면 메모가 지워집니다)', cur);
+    if(nm === null) return;
+    if(nm.trim()) t.memo[k] = nm.trim(); else delete t.memo[k];
+    pSave(); drawProg(); return;
+  }
+
+  if(d.cls){
+    const nm = prompt('가르치는 반을 쉼표로 구분해 적어 주세요.\n이름을 그대로 두면 체크한 기록이 유지됩니다.',
+      t.classes.map(c => c.name).join(', '));
+    if(nm === null) return;
+    const names = nm.split(',').map(x => x.trim()).filter(Boolean);
+    if(!names.length){ alert('반이 하나는 있어야 해요.'); return; }
+    const next = names.map(x => t.classes.find(c => c.name === x) || { id:uid(), name:x });
+    const gone = t.classes.filter(c => !next.some(x => x.id === c.id));
+    if(gone.length && !confirm(gone.map(c => c.name).join(', ') + ' 이(가) 사라집니다.\n체크한 기록도 함께 지워져요. 계속할까요?')) return;
+    gone.forEach(c => t.lessons.forEach(l => { delete t.done[c.id + '|' + l.id]; delete t.memo[c.id + '|' + l.id]; }));
+    t.classes = next; pSave(); drawProg(); return;
+  }
+
+  if(d.per){
+    const cur = t.classes.map(c => c.name + '=' + (c.periods || 0)).join(', ');
+    const nm = prompt('반별 학기 수업 횟수를 적어 주세요.\n반이름=횟수 를 쉼표로 잇습니다.\n(예: 201반=32, 202반=34)', cur);
+    if(nm === null) return;
+    nm.split(',').forEach(part => {
+      const i = part.indexOf('=');
+      if(i < 0) return;
+      const name = part.slice(0, i).trim(), v = parseInt(part.slice(i + 1), 10);
+      const c = t.classes.find(x => x.name === name);
+      if(c) c.periods = (!isNaN(v) && v > 0) ? v : undefined;
+    });
+    pSave(); drawProg(); return;
+  }
+
+  if(d.fill){
+    if(!confirm('config.js(progress.boards)에 적어 둔 기본 반 목록과 수업 횟수를 넣습니다.\n'
+      + '(차시 목록이 적혀 있으면 아직 손대지 않은 진도표에만 함께 들어갑니다)\n\n'
+      + '같은 이름의 진도표가 이미 있으면 반과 횟수만 바꾸고\n차시와 체크 기록은 그대로 둡니다. 계속할까요?')) return;
+    PLAN.forEach(p => {
+      let bd = P.tables.find(x => x.name === p.name);
+      if(!bd){ bd = { id:uid(), name:p.name, classes:[], lessons:[], done:{}, memo:{} }; P.tables.push(bd); }
+      bd.classes = p.classes.map(x => {
+        const old = bd.classes.find(c => c.name === x[0]);
+        return { id: old ? old.id : uid(), name:x[0], periods:x[1] };
+      });
+      /* 아직 손대지 않은 진도표(차시가 없거나 기본 한 줄뿐 + 체크 0)에만 전체 차시를 넣는다.
+         한 칸이라도 체크해 두었으면 건드리지 않는다 — 기록이 날아가면 안 되니까. */
+      const untouched = bd.lessons.length <= 1 && !Object.keys(bd.done || {}).length;
+      if(untouched) bd.lessons = (p.lessons || [FIRST_LESSON]).map(n => ({ id:uid(), name:n }));
+    });
+    P.active = P.tables.find(x => x.name === PLAN[0].name).id;
+    pLocal(); drawProg();
+    if(sbOn()) P.tables.forEach(bd => cloudTouch(bd));
+    return;
+  }
+
+  if(d.rent){
+    const nm = prompt('이 진도표의 이름', t.name);
+    if(nm === null || !nm.trim()) return;
+    t.name = nm.trim(); pSave(); drawProg(); return;
+  }
+
+  if(d.delt){
+    if(P.tables.length < 2){ alert('진도표가 하나뿐이라 지울 수 없어요.\n대신 「반 편집」이나 차시 ✕로 정리해 보세요.'); return; }
+    if(!confirm('「' + t.name + '」 진도표를 통째로 지울까요?\n되돌릴 수 없습니다.')) return;
+    const gid = t.id;
+    P.tables = P.tables.filter(x => x.id !== gid);
+    P.active = P.tables[0].id; pLocal(); drawProg();
+    if(sbOn()){ setStat('saving');
+      sbRest('progress_boards?id=eq.' + encodeURIComponent(gid), { method:'DELETE' })
+        .then(() => setStat('saved')).catch(ex => setStat('err', ex.message)); }
+    return;
+  }
+
+  if(d.exp){
+    const blob = new Blob([JSON.stringify(P, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '진도표_' + today() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    return;
+  }
+
+  if(d.imp){ $('#pFile').click(); return; }
+});
+
+$('#pFile').addEventListener('change', ev => {
+  const f = ev.target.files && ev.target.files[0];
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const o = JSON.parse(rd.result);
+      if(!o || !Array.isArray(o.tables) || !o.tables.length) throw 0;
+      if(!confirm('지금 이 기기의 진도표를 덮어씁니다. 계속할까요?')) return;
+      P = o; if(!P.tables.some(x => x.id === P.active)) P.active = P.tables[0].id;
+      pLocal(); drawProg();
+      if(sbOn()){ setStat('saving');
+        Promise.all(P.tables.map(pushBoard)).then(() => setStat('saved')).catch(ex => setStat('err', ex.message)); }
+      alert('복원했습니다 — 진도표 ' + P.tables.length + '개');
+    } catch(e) { alert('진도표 파일이 아닌 것 같아요. 백업으로 내려받은 파일을 골라 주세요.'); }
+  };
+  rd.readAsText(f);
+  ev.target.value = '';
+});
+
+/* ══════════════════════════════════════════════════════════════
+   클라우드 저장 (Supabase) — 질문나무·칭찬도장판과 같은 프로젝트·같은 교사 계정.
+   라이브러리 없이 fetch만 씁니다. 로그인하지 않으면 이 기기에만 저장돼요.
+   ※ 표 progress_boards 는 setup/01_설치.sql (PART 9) 이 만듭니다.
+   ══════════════════════════════════════════════════════════════ */
+const SB = {
+  url: String(kitGet('supabase.url', '')).replace(/\/+$/, ''),
+  key: kitGet('supabase.key', ''),
+  sesKey: 'sc_prog_session',
+  ses: null
+};
+try { SB.ses = JSON.parse(localStorage.getItem(SB.sesKey)); } catch(e) { SB.ses = null; }
+const sbOn = () => !!(SB.ses && SB.ses.refresh_token);
+const sbSaveSes = j => {
+  SB.ses = j ? { access_token:j.access_token, refresh_token:j.refresh_token,
+                 expires_at:j.expires_at || (Math.floor(Date.now()/1000) + (j.expires_in||3600)),
+                 email:(j.user&&j.user.email)||(SB.ses&&SB.ses.email), uid:(j.user&&j.user.id)||(SB.ses&&SB.ses.uid) } : null;
+  if(SB.ses) localStorage.setItem(SB.sesKey, JSON.stringify(SB.ses));
+  else localStorage.removeItem(SB.sesKey);
+};
+
+async function sbToken(){
+  if(!sbOn()) throw new Error('로그인이 필요합니다');
+  if(SB.ses.expires_at - 60 > Math.floor(Date.now()/1000)) return SB.ses.access_token;
+  const r = await fetch(SB.url + '/auth/v1/token?grant_type=refresh_token', {
+    method:'POST', headers:{ apikey:SB.key, 'Content-Type':'application/json' },
+    body: JSON.stringify({ refresh_token: SB.ses.refresh_token }) });
+  const j = await r.json().catch(() => ({}));
+  if(!r.ok || !j.access_token){ sbSaveSes(null); throw new Error('로그인이 풀렸어요. 다시 들어가 주세요.'); }
+  sbSaveSes(j); return SB.ses.access_token;
+}
+
+async function sbRest(path, opt){
+  const tok = await sbToken();
+  const o = opt || {};
+  const r = await fetch(SB.url + '/rest/v1/' + path, {
+    method: o.method || 'GET',
+    headers: Object.assign({ apikey:SB.key, Authorization:'Bearer ' + tok,
+      'Content-Type':'application/json' }, o.headers || {}),
+    body: o.body });
+  if(!r.ok){
+    const t = await r.text().catch(() => '');
+    if(/progress_boards/.test(t) && /(does not exist|schema cache|PGRST205|42P01)/i.test(t))
+      throw new Error('서버에 진도표 자리가 아직 없어요. Supabase에서 SETUP.sql을 한 번만 실행해 주세요.');
+    if(r.status === 401 || r.status === 403)
+      throw new Error('권한이 없다고 나옵니다. 로그아웃했다가 다시 들어가 보세요.');
+    throw new Error('서버가 거절했어요 (' + r.status + ') ' + t.slice(0, 90));
+  }
+  return r.status === 204 ? null : r.json().catch(() => null);
+}
+
+async function sbLogin(email, pw){
+  const r = await fetch(SB.url + '/auth/v1/token?grant_type=password', {
+    method:'POST', headers:{ apikey:SB.key, 'Content-Type':'application/json' },
+    body: JSON.stringify({ email: email, password: pw }) });
+  const j = await r.json().catch(() => ({}));
+  if(!r.ok || !j.access_token){
+    const KO = {
+      invalid_credentials:'이메일이나 비밀번호가 맞지 않아요. 다시 확인해 주세요.',
+      email_not_confirmed:'이메일 인증이 아직 끝나지 않은 계정이에요.',
+      user_not_found:'그런 계정이 없어요. 교사 대시보드에 등록한 이메일이 맞는지 확인해 주세요.',
+      over_request_rate_limit:'너무 여러 번 시도했어요. 잠시 뒤에 다시 해 주세요.',
+      validation_failed:'이메일과 비밀번호를 모두 적어 주세요.'
+    };
+    const raw = j.error_description || j.msg || j.message || '';
+    throw new Error(KO[j.error_code]
+      || (/invalid login/i.test(raw) ? KO.invalid_credentials : '')
+      || raw || '로그인하지 못했어요. 인터넷 연결을 확인해 주세요.');
+  }
+  sbSaveSes(j);
+}
+
+/* ── 상태 표시 ── */
+let cStat = { k:'', msg:'' };
+function setStat(k, msg){ cStat = { k:k, msg:msg || '' }; drawCloud(); }
+
+function drawCloud(){
+  const box = $('#pCloud');
+  if(!sbOn()){
+    box.innerHTML =
+      '<div class="cbar out"><span class="ci">☁️</span>'
+      + '<div class="ct"><b>이 기기에만 저장되고 있어요</b>'
+      + '<small>로그인하면 학교 컴퓨터·휴대폰 어디서 열어도 같은 표가 보입니다</small></div>'
+      + '<button class="pbtn" type="button" data-login="1">로그인</button></div>'
+      + '<form class="cform" id="cForm" hidden>'
+      + '<label for="cEmail">이메일</label><input id="cEmail" type="email" autocomplete="username" inputmode="email">'
+      + '<label for="cPw">비밀번호</label><input id="cPw" type="password" autocomplete="current-password">'
+      + '<div class="crow"><button class="cgo" type="submit">들어가기</button>'
+      + '<span class="cnote" style="margin:0">질문나무·칭찬도장판과 같은 교사 계정이에요</span></div>'
+      + '<p class="cerr" id="cErr" hidden></p></form>';
+    return;
+  }
+  const lbl = { loading:'불러오는 중…', saving:'저장 중…', saved:'저장됨 ✓', err:'저장 못 함', offline:'인터넷 없음' }[cStat.k] || '';
+  box.innerHTML =
+    '<div class="cbar in"><span class="ci">☁️</span>'
+    + '<div class="ct"><b>어느 기기에서든 같은 표</b><small>' + esc(SB.ses.email || '') + '</small></div>'
+    + (lbl ? '<span class="cstat ' + (cStat.k === 'err' || cStat.k === 'offline' ? 'err' : cStat.k === 'saved' ? 'saved' : 'saving') + '">' + lbl + '</span>' : '')
+    + '<button class="pbtn" type="button" data-logout="1">로그아웃</button></div>'
+    + (cStat.msg ? '<p class="cerr">' + esc(cStat.msg) + '</p>' : '');
+}
+
+/* ── 올리기 / 내리기 ── */
+const tidy = b => ({ owner:SB.ses.uid, id:b.id, name:b.name,
+  sort: Math.max(0, P.tables.findIndex(x => x.id === b.id)),
+  classes:b.classes, lessons:b.lessons, done:b.done, memo:b.memo || {} });
+
+async function pushBoard(b){
+  await sbRest('progress_boards?on_conflict=owner,id', { method:'POST',
+    headers:{ Prefer:'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify([tidy(b)]) });
+}
+
+const waiting = new Map();
+function cloudTouch(b){
+  if(!sbOn() || !b) return;
+  clearTimeout(waiting.get(b.id));
+  setStat('saving');
+  waiting.set(b.id, setTimeout(async () => {
+    waiting.delete(b.id);
+    try { await pushBoard(b); setStat('saved'); }
+    catch(e){ setStat(navigator.onLine ? 'err' : 'offline', navigator.onLine ? e.message : '연결되면 자동으로 다시 저장할게요.'); }
+  }, 600));
+}
+
+async function syncDown(){
+  if(!sbOn()) { drawCloud(); return; }
+  setStat('loading');
+  try {
+    const rows = await sbRest('progress_boards?select=id,name,sort,classes,lessons,done,memo&order=sort.asc');
+    if(rows && rows.length){
+      const mine = P.tables.some(t => t.lessons.length || Object.keys(t.done).length);
+      if(mine) localStorage.setItem('sc_prog_before_cloud', JSON.stringify(P));
+      const keep = P.active;
+      P = { active:null, tables: rows.map(r => ({ id:r.id, name:r.name,
+              classes:r.classes || [], lessons:r.lessons || [], done:r.done || {}, memo:r.memo || {} })) };
+      P.active = P.tables.some(t => t.id === keep) ? keep : P.tables[0].id;
+      pLocal();
+      setStat('saved', mine ? '서버에 있던 진도표를 가져왔습니다. 이 기기에 있던 것은 따로 보관해 두었어요(📤 백업으로 확인).' : '');
+    } else {
+      for(const b of P.tables) await pushBoard(b);
+      setStat('saved', '이 기기의 진도표를 서버에 올렸습니다.');
+    }
+    drawProg();
+  } catch(e){
+    setStat(navigator.onLine ? 'err' : 'offline', e.message);
+    drawProg();
+  }
+}
+
+window.addEventListener('online', () => { if(sbOn()){ setStat('saving'); cloudTouch(curT()); } });
+
+/* ── 로그인 · 로그아웃 ── */
+$('#v-prog').addEventListener('click', e => {
+  const b = e.target.closest('[data-login],[data-logout]');
+  if(!b) return;
+  if(b.dataset.login){ const f = $('#cForm'); f.hidden = false; $('#cEmail').focus(); return; }
+  if(b.dataset.logout){
+    if(!confirm('로그아웃할까요?\n표는 서버에 그대로 있고, 이 기기에도 마지막 모습이 남아 있어요.')) return;
+    sbSaveSes(null); setStat(''); drawCloud();
+  }
+});
+$('#v-prog').addEventListener('submit', async e => {
+  if(!e.target.matches('#cForm')) return;
+  e.preventDefault();
+  const btn = e.target.querySelector('.cgo'), err = $('#cErr');
+  err.hidden = true; btn.disabled = true; btn.textContent = '들어가는 중…';
+  try {
+    await sbLogin($('#cEmail').value.trim(), $('#cPw').value);
+    drawCloud(); await syncDown();
+  } catch(ex){
+    err.hidden = false; err.textContent = ex.message;
+    btn.disabled = false; btn.textContent = '들어가기';
+  }
+});
+/* ══════════════════════════════════════════════════════════════
+   차시 고르기 — config.js 의 progress.lessonBank
+   [{ unit:'단원 이름', grade:'2학년', items:[차시명, …] }, …]  (적힌 순서 = 교육과정 순서)
+   ══════════════════════════════════════════════════════════════ */
+const LESSON_BANK = (kitGet('progress.lessonBank', null) || [
+  { unit:'🧭 학기 시작·공통', grade:'', items:[
+    '학기 첫 시간', '오리엔테이션', '단원 도입', '실험', '문제 풀이', '단원 정리',
+    '수행평가', '시험 대비', '지필평가 피드백'] },
+]).filter(b => b && Array.isArray(b.items)).map(b => ({ unit:String(b.unit||''), grade:String(b.grade||''), items:b.items.map(String) }));
+
+/* 목록에 적힌 순서 = 교육과정 순서. 고른 차시를 이 순서로 정렬해 담습니다. */
+const BANK_ORDER = (function(){ const m = {}; let k = 0;
+  LESSON_BANK.forEach(b => b.items.forEach(it => { m[it] = k++; })); return m; })();
+
+let pickSel = [];
+
+function drawPick(){
+  const t = curT();
+  const have = new Set(t.lessons.map(l => l.name));
+  const g = /1학년/.test(t.name) ? '1학년' : /2학년/.test(t.name) ? '2학년' : '';
+  const banks = LESSON_BANK.map((b, i) => ({ b:b, i:i }))
+    .sort((x, y) => (y.b.grade === g && g ? 1 : 0) - (x.b.grade === g && g ? 1 : 0));
+
+  $('#pickBody').innerHTML = banks.map(o => {
+    const b = o.b;
+    const chips = b.items.map((it, ii) => {
+      if(have.has(it))
+        return '<span class="pk has">✓ ' + esc(it) + '</span>';
+      const on = pickSel.indexOf(it) >= 0;
+      return '<button type="button" class="pk' + (on ? ' on' : '') + '" data-pk="' + o.i + '.' + ii + '">'
+        + esc(it) + '</button>';
+    }).join('');
+    const rest = b.items.filter(x => !have.has(x) && pickSel.indexOf(x) < 0).length;
+    return '<div class="pkg"><h4>' + esc(b.unit)
+      + (rest ? '<button class="pkall" type="button" data-pkall="' + o.i + '">남은 ' + rest + '개 모두</button>' : '')
+      + '</h4><div class="pkl">' + chips + '</div></div>';
+  }).join('');
+
+  const btn = $('[data-pkadd]');
+  const extra = $('#pickCustom').value.trim() ? 1 : 0;
+  const total = pickSel.length + extra;
+  btn.disabled = total === 0;
+  btn.textContent = total ? total + '개 추가' : '추가';
+}
+
+function openPick(){ pickSel = []; $('#pickCustom').value = ''; $('#pPick').hidden = false; drawPick();
+  $('#pPick').scrollIntoView({ block:'nearest', behavior:'smooth' }); }
+function closePick(){ $('#pPick').hidden = true; pickSel = []; }
+
+$('#v-prog').addEventListener('click', e => {
+  const b = e.target.closest('[data-pk],[data-pkall],[data-pkadd],[data-pkclose]');
+  if(!b) return;
+  const t = curT();
+
+  if(b.dataset.pkclose){ closePick(); return; }
+
+  if(b.dataset.pk){
+    const p = b.dataset.pk.split('.');
+    const name = LESSON_BANK[+p[0]].items[+p[1]];
+    const i = pickSel.indexOf(name);
+    if(i >= 0) pickSel.splice(i, 1); else pickSel.push(name);
+    drawPick(); return;
+  }
+
+  if(b.dataset.pkall){
+    const have = new Set(t.lessons.map(l => l.name));
+    LESSON_BANK[+b.dataset.pkall].items.forEach(it => {
+      if(!have.has(it) && pickSel.indexOf(it) < 0) pickSel.push(it);
+    });
+    drawPick(); return;
+  }
+
+  if(b.dataset.pkadd){
+    const extra = $('#pickCustom').value.trim();
+    const list = pickSel.slice();
+    if(extra) list.push(extra);
+    if(!list.length) return;
+    const have = new Set(t.lessons.map(l => l.name));
+    list.sort(function(a, b){
+      var x = (a in BANK_ORDER) ? BANK_ORDER[a] : 1e9;
+      var y = (b in BANK_ORDER) ? BANK_ORDER[b] : 1e9;
+      return x - y;
+    });
+    list.forEach(nm => { if(!have.has(nm)) t.lessons.push({ id:uid(), name:nm }); });
+    closePick(); pSave(); drawProg(); return;
+  }
+});
+
+$('#pickCustom').addEventListener('input', drawPick);
+$('#pickCustom').addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ e.preventDefault(); $('[data-pkadd]').click(); }
+});
+
+
+/* ══════════════ 시작 ══════════════ */
+(function(){
+  const name = kitGet('brand.progress', '진도 트래커');
+  $('#pTitle').textContent = name; document.title = '📊 ' + name;
+  const sch = kitGet('school.name', ''); if(sch) $('#pSchool').textContent = '🏫 ' + sch;
+  const bn = $('#kitBanner');
+  if(!window.CLASS_KIT_CONFIG){
+    bn.hidden = false;
+    bn.innerHTML = '⚠️ <b>config.js 를 찾지 못했어요.</b> 이 기기에만 저장되는 모드로 열렸습니다. '
+      + '☁️ 로그인(여러 기기 동기화)을 쓰려면 꾸러미 폴더의 <code>config.js</code> 에 Supabase 주소·키를 넣으세요 → <a href="../setup/guide.html">설치 가이드</a>';
+  } else if(!SB.url || !SB.key || /xxxx/.test(SB.url)){
+    bn.hidden = false;
+    bn.innerHTML = '⚠️ <b>config.js 의 supabase.url / key 가 아직 비어 있어요.</b> 지금은 이 기기에만 저장됩니다. → <a href="../setup/guide.html">설치 가이드</a>';
+  }
+  kitTheme('progress'); kitFooter(name);
+})();
+drawProg(); drawCloud();
+if(sbOn()) syncDown();
+
+</script>
+</body>
+</html>

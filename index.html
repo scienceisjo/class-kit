@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🧰 우리 반 도구 꾸러미</title>
+<meta name="description" content="질문나무 · 칭찬도장판 · 진도 트래커 — 선생님이 각자 설치해 쓰는 수업 도구 꾸러미">
+<script src="config.js"></script>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#23261f;--ink2:#5c6157;--mute:#8a8f85;--line:#e4e0d4;--pr:#1E5C2D;--pl:#5CB86E;--gold:#c99a3a;--r:16px;
+  --font:'Pretendard Variable',Pretendard,-apple-system,system-ui,'Segoe UI','Malgun Gothic',sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding:28px 18px 60px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+h1{margin:0;font-size:clamp(24px,4vw,34px);letter-spacing:-.02em}
+h1 small{display:block;font-size:.5em;font-weight:600;color:var(--ink2);margin-top:4px}
+.school{font-weight:800;color:var(--pr)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{display:block;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:18px 18px 16px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s;position:relative}
+.card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(30,92,45,.10);border-color:var(--pl)}
+.card .ic{font-size:30px;line-height:1}
+.card h2{margin:10px 0 4px;font-size:18px}
+.card p{margin:0;color:var(--ink2);font-size:14px}
+.card .who{position:absolute;top:14px;right:14px;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:#eef6ef;color:var(--pr)}
+.card .who.stu{background:#fff4dc;color:#8a5a12}
+.sec{margin-top:30px}
+.sec h3{font-size:15px;color:var(--ink2);margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em}
+.status{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:14px 18px}
+.status ul{list-style:none;margin:0;padding:0}
+.status li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.status li:last-child{border-bottom:0}
+.status .k{width:22px;flex-shrink:0;text-align:center}
+.status .hint{color:var(--mute);font-size:13px}
+.status button{margin-top:10px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font:inherit;font-weight:700;cursor:pointer}
+.status button:hover{border-color:var(--pl)}
+code{background:#eee;padding:1px 6px;border-radius:6px;font-size:.92em}
+footer{margin-top:40px;text-align:center;color:var(--mute);font-size:12.5px;line-height:1.7}
+footer a{color:inherit}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-block;padding:9px 14px;border-radius:10px;background:var(--pr);color:#fff;text-decoration:none;font-weight:700;font-size:14px}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🧰 우리 반 도구 꾸러미
+      <small><span class="school" id="school">우리 학교</span> · 질문나무 · 칭찬도장판 · 진도 트래커</small></h1>
+    <div class="btnrow">
+      <a class="btn ghost" href="setup/guide.html">📘 설치·사용 가이드</a>
+    </div>
+  </header>
+
+  <div class="grid">
+    <a class="card" href="question-tree/">
+      <span class="who stu">학생용</span>
+      <div class="ic">🌳</div>
+      <h2 id="nQ">질문 과수원</h2>
+      <p>학생이 질문을 심고, 다듬고, 스스로 풀어 보는 나무. 질문이 쌓이면 나무가 자라요.</p>
+    </a>
+    <a class="card" href="question-tree/teacher.html">
+      <span class="who">교사용</span>
+      <div class="ic">🧑‍🏫</div>
+      <h2>교사 대시보드</h2>
+      <p>반별 질문 보기 · 되묻기 · 대표 질문 · 차시 지정 · 리포트 · ⚙️ 관리(초대코드·상한).</p>
+    </a>
+    <a class="card" href="stamp-board/">
+      <span class="who stu">학생·교사</span>
+      <div class="ic">🏅</div>
+      <h2 id="nS">칭찬도장판</h2>
+      <p>겉은 캐릭터가 자라는 도장판, 속은 «관찰된 행동» 기록부. 세특 근거 문장이 쌓여요.</p>
+    </a>
+    <a class="card" href="progress/">
+      <span class="who">교사용</span>
+      <div class="ic">📊</div>
+      <h2 id="nP">진도 트래커</h2>
+      <p>반 × 차시 체크표. 어느 반이 어디까지 했는지, 다음 시간에 뭘 할지 한눈에.</p>
+    </a>
+  </div>
+
+  <section class="sec">
+    <h3>설치 상태</h3>
+    <div class="status" id="status">
+      <ul id="checks"><li><span class="k">…</span><span>확인하는 중</span></li></ul>
+      <button type="button" onclick="runChecks()">↻ 다시 확인</button>
+    </div>
+  </section>
+
+  <footer id="app-credit">
+    원작 © 2026 <a href="https://scienceisjo.github.io/growing-teachers/" target="_blank" rel="noopener">조승재(과학이조선생)</a> ·
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a><br>
+    우리 반 도구 꾸러미 <span id="ver"></span>
+  </footer>
+</div>
+
+<script>
+const KIT = window.CLASS_KIT_CONFIG || null;
+const g = (p, d) => { try{ const v = p.split('.').reduce((o,k)=>(o==null?undefined:o[k]), KIT||{}); return (v===undefined||v===null||v==='')?d:v; }catch(e){ return d; } };
+const $ = id => document.getElementById(id);
+$('school').textContent = g('school.name', '우리 학교');
+$('nQ').textContent = g('brand.question', '질문 과수원');
+$('nS').textContent = g('brand.stamp', '칭찬도장판');
+$('nP').textContent = g('brand.progress', '진도 트래커');
+$('ver').textContent = KIT && KIT.version ? '· ' + KIT.version : '';
+document.title = '🧰 ' + g('school.name','우리 학교') + ' 도구 꾸러미';
+(function(){ const c = KIT && KIT.credits || {}; const f = $('app-credit');
+  if(!KIT) return;
+  const a = c.author||'조승재(과학이조선생)', au = c.authorUrl||'', lic = c.license||'CC BY-NC-SA 4.0', lu = c.licenseUrl||'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko';
+  const sch = g('school.name',''), tch = g('school.teacher','');
+  f.innerHTML = '원작 © 2026 ' + (au?'<a href="'+au+'" target="_blank" rel="noopener">'+a+'</a>':a) + ' · <a href="'+lu+'" target="_blank" rel="noopener">'+lic+'</a>'
+    + (sch ? ' · 운영: '+sch+(tch?' '+tch+' 선생님':'') : '') + '<br>우리 반 도구 꾸러미 ' + (KIT.version||'');
+})();
+
+async function runChecks(){
+  const ul = $('checks'); const rows = [];
+  const add = (ok, text, hint) => rows.push('<li><span class="k">'+(ok===true?'✅':ok===false?'❌':'⚠️')+'</span><span>'+text+(hint?'<br><span class="hint">'+hint+'</span>':'')+'</span></li>');
+  const render = () => ul.innerHTML = rows.join('');
+  // 1) config.js
+  if(!KIT){ add(false, '<b>config.js</b> 를 읽지 못했어요', '꾸러미 폴더 맨 위에 config.js 가 있어야 합니다. 따옴표·쉼표가 틀리면 파일이 있어도 읽히지 않아요 → 가이드의 «설정 생성기»로 다시 만드세요.'); render(); return; }
+  add(true, '<b>config.js</b> 읽음 — ' + g('school.name','(학교 이름 없음)') + (g('school.teacher','') ? ' · ' + g('school.teacher','') + ' 선생님' : ''));
+  const url = String(g('supabase.url','')).replace(/\/+$/,''), key = String(g('supabase.key',''));
+  const dom = String(g('studentEmailDomain',''));
+  // 2) 값 형식
+  if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url) || /xxxx/.test(url)) add(false, 'Supabase 주소가 비어 있거나 형식이 달라요', 'Project Settings → API → Project URL (https://xxxx.supabase.co)');
+  else add(true, 'Supabase 주소 형식 OK — <code>' + url + '</code>');
+  if(!key || /xxxx/.test(key) || key.length < 20) add(false, 'Supabase 키가 비어 있어요', 'Project Settings → API → publishable(anon) key');
+  else if(/^sb_secret|service_role/.test(key) || (key.startsWith('eyJ') && /service_role/.test(atob((key.split('.')[1]||'').replace(/-/g,'+').replace(/_/g,'/')+'==').replace(/[^\x20-\x7e]/g,'')))) add(false, '<b>service_role(secret) 키가 들어 있어요!</b>', '즉시 publishable(anon) 키로 바꾸고, Supabase 에서 그 키를 재발급하세요. 이 키는 모든 보안을 우회합니다.');
+  else add(true, '키 형식 OK (publishable/anon)');
+  if(!/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(dom)) add(false, '학생 이메일 도메인(studentEmailDomain)이 이상해요', '예: student.school');
+  else add(true, '학생 아이디 형식 — <code>s학년_반_번호@' + dom + '</code>');
+  render();
+  if(rows.some(r => r.includes('❌'))) return;   // 형식이 틀리면 연결 시도는 무의미
+  // 3) 서버 연결 + 이메일 확인 설정 — /auth/v1/settings 는 publishable 키만으로 200 을 준다
+  let settings = null;
+  try{
+    const r = await fetch(url + '/auth/v1/settings', { headers:{ apikey:key } });
+    if(r.status === 200){ add(true, 'Supabase 연결 OK'); try{ settings = await r.json(); }catch(e){} }
+    else add(false, 'Supabase 응답 ' + r.status, (r.status===401||r.status===403) ? '키가 틀렸어요(Invalid API key). publishable 키를 다시 복사하세요.' : '프로젝트가 일시정지(Paused) 상태이거나 주소가 틀렸어요.');
+  }catch(e){ add(false, 'Supabase 에 연결하지 못했어요', '인터넷 연결, 또는 주소 오타(https:// 포함)를 확인하세요. 프로젝트가 일시정지(Paused)면 supabase.com 에서 Restore.'); render(); return; }
+  if(settings){
+    if(settings.disable_signup) add(false, '가입이 막혀 있어요(Allow new users to sign up 꺼짐)', 'Authentication → Sign In / Providers → Allow new users to sign up 켜기');
+    if(settings.mailer_autoconfirm === true) add(true, 'Confirm email 꺼짐 — 학생이 가입하면 바로 로그인돼요');
+    else add(false, '<b>Confirm email 이 켜져 있어요</b> — 학생이 가입해도 로그인이 안 됩니다', 'Authentication → Sign In / Providers → Email → Confirm email 끄기(OFF) → Save');
+  }
+  render();
+  // 4) SQL 설치 여부 — 함수가 «없으면» 404(PGRST202), «있지만 권한 없음»이면 401/403 → 설치됨
+  try{
+    const r = await fetch(url + '/rest/v1/rpc/kit_get_setting', { method:'POST', headers:{ apikey:key, 'Content-Type':'application/json' }, body:'{"p_key":"installed_version"}' });
+    let j = {}; try{ j = await r.json(); }catch(e){}
+    if(r.status === 404 || (j && j.code === 'PGRST202')) add(false, '설치 SQL(01_설치.sql)이 아직 실행되지 않았어요', 'Supabase → SQL Editor 에 setup/01_설치.sql 전체를 붙여넣고 Run');
+    else add(true, '설치 SQL 실행됨 (표·함수·보안규칙 준비)');
+  }catch(e){ add(null, 'SQL 설치 여부를 확인하지 못했어요'); }
+  render();
+}
+runChecks();
+</script>
+</body>
+</html>
