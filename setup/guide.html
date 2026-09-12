@@ -3,84 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>📘 꾸러미 설치 가이드</title>
+<title>설치 가이드 — 우리 반 도구 꾸러미</title>
+<meta name="description" content="질문나무·칭찬도장판·진도 트래커를 선생님 각자의 Supabase 로 설치하는 방법">
 <style>
-:root{--bg:#f6f4ee;--card:#fff;--ink:#23261f;--ink2:#5c6157;--mute:#8a8f85;--line:#e4e0d4;--pr:#1E5C2D;--pl:#5CB86E;--warn:#b3423a;--gold:#c99a3a;--r:14px;
-  --font:'Pretendard Variable',Pretendard,-apple-system,system-ui,'Segoe UI','Malgun Gothic',sans-serif;--mono:ui-monospace,Consolas,'Courier New',monospace}
+/* ── Apple design language: 단일 액션 블루 · 흰/파치먼트 교차 타일 · 그림자 0 · 필 CTA · 17px 본문 ── */
+:root{
+  --primary:#0066cc; --primary-focus:#0071e3; --primary-on-dark:#2997ff;
+  --ink:#1d1d1f; --ink-80:#333333; --ink-48:#7a7a7a; --body-muted:#cccccc;
+  --canvas:#ffffff; --parchment:#f5f5f7; --pearl:#fafafc; --tile-dark:#272729; --tile-dark-2:#2a2a2c; --black:#000000;
+  --hairline:#e0e0e0; --divider-soft:#f0f0f0;
+  --r-sm:8px; --r-md:11px; --r-lg:18px; --pill:9999px;
+  --display:-apple-system,BlinkMacSystemFont,'SF Pro Display','Apple SD Gothic Neo','Pretendard Variable',Pretendard,'Malgun Gothic',system-ui,sans-serif;
+  --text:-apple-system,BlinkMacSystemFont,'SF Pro Text','Apple SD Gothic Neo','Pretendard Variable',Pretendard,'Malgun Gothic',system-ui,sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.7}
-.lay{max-width:1080px;margin:0 auto;padding:24px 18px 80px;display:grid;grid-template-columns:230px 1fr;gap:26px}
-@media(max-width:820px){.lay{grid-template-columns:1fr}.toc{position:static!important}}
-.toc{position:sticky;top:16px;align-self:start;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:12px 6px}
-.toc a{display:block;padding:7px 12px;border-radius:9px;color:var(--ink2);text-decoration:none;font-size:14px}
-.toc a:hover{background:#eef6ef;color:var(--pr)}
-.toc a b{color:var(--pr);margin-right:6px}
-h1{font-size:clamp(24px,3.6vw,32px);margin:0 0 6px;letter-spacing:-.02em}
-.lead{color:var(--ink2);margin:0 0 20px}
-section{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-bottom:18px;scroll-margin-top:16px}
-h2{font-size:20px;margin:0 0 10px}
-h2 .n{display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:var(--pr);color:#fff;font-size:14px;margin-right:8px}
-h3{font-size:15.5px;margin:18px 0 6px}
-ol,ul{padding-left:22px;margin:6px 0}
-li{margin:3px 0}
-code{background:#f0ede4;padding:1px 6px;border-radius:6px;font-family:var(--mono);font-size:.9em}
-pre{background:#1f2420;color:#e9efe6;padding:14px 16px;border-radius:12px;overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.55}
-.note{border-left:4px solid var(--gold);background:#fff9e8;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;font-size:14.5px}
-.warn{border-left-color:var(--warn);background:#fff1ef}
-.ok{border-left-color:var(--pl);background:#eef8ef}
-kbd{border:1px solid #ccc;border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:.9em;background:#fafafa}
-table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
-th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
-th{background:#f4f2ea}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.47;letter-spacing:-.374px;-webkit-font-smoothing:antialiased}
+a{color:var(--primary);text-decoration:none}
+a:hover{text-decoration:underline}
+b,strong{font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--parchment);padding:2px 7px;border-radius:5px;letter-spacing:0}
+kbd{font-family:var(--text);font-size:.85em;border:1px solid var(--hairline);border-radius:5px;padding:0 6px;background:var(--pearl)}
+
+/* 글로벌 내비 44px 검정 */
+.gnav{position:sticky;top:0;z-index:20;height:44px;background:var(--black);color:#fff;font-size:12px;letter-spacing:-.12px}
+.gnav .in{max-width:980px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 22px}
+.gnav a{color:#fff;opacity:.85}
+.gnav a:hover{opacity:1;text-decoration:none}
+.gnav .links{display:flex;gap:20px}
+/* 서브내비 52px 프로스티드 */
+.subnav{position:sticky;top:44px;z-index:19;height:52px;background:rgba(245,245,247,.8);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.08)}
+.subnav .in{max-width:980px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:12px}
+.subnav h2{margin:0;font-family:var(--display);font-size:21px;font-weight:600;line-height:1.19;letter-spacing:.231px}
+.subnav .r{display:flex;align-items:center;gap:18px;font-size:14px;letter-spacing:-.224px;overflow:auto;white-space:nowrap}
+.subnav .r a{color:var(--ink)}
+.subnav .r a:hover{color:var(--primary);text-decoration:none}
+@media(max-width:735px){.subnav .r a.step{display:none}}
+
+/* 버튼 문법: 파란 필 / 고스트 필 / 다크 유틸 */
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary);color:#fff;font-family:var(--text);font-size:17px;font-weight:400;letter-spacing:-.374px;line-height:1;border:0;border-radius:var(--pill);padding:11px 22px;cursor:pointer;transition:transform .12s;text-decoration:none}
+.btn:hover{text-decoration:none}
+.btn:active{transform:scale(.95)}
+.btn:focus-visible{outline:2px solid var(--primary-focus);outline-offset:2px}
+.btn.ghost{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+.btn.sm{font-size:14px;letter-spacing:-.224px;padding:8px 15px}
+.btn.util{background:var(--ink);color:#fff;border-radius:var(--r-sm);font-size:14px;letter-spacing:-.224px;padding:8px 15px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* 타일: 풀블리드, 모서리 0, 색 변화가 곧 구분선 */
+.tile{padding:80px 22px}
+.tile.parchment{background:var(--parchment)}
+.tile.dark{background:var(--tile-dark);color:#fff}
+.tile.dark a{color:var(--primary-on-dark)}
+.tile.dark code{background:rgba(255,255,255,.1);color:#fff}
+.tile.dark .muted{color:var(--body-muted)}
+.tile .in{max-width:980px;margin:0 auto}
+.tile .in.narrow{max-width:720px}
+@media(max-width:735px){.tile{padding:48px 20px}}
+
+/* 히어로 */
+.hero{text-align:center;padding:96px 22px 72px}
+.hero h1{font-family:var(--display);font-size:56px;font-weight:600;line-height:1.07;letter-spacing:-.28px;margin:0 0 14px}
+.hero p.lead{font-family:var(--display);font-size:28px;font-weight:400;line-height:1.14;letter-spacing:.196px;margin:0 auto 28px;max-width:720px;color:var(--ink)}
+.hero .ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero .fine{margin-top:22px;font-size:14px;letter-spacing:-.224px;color:var(--ink-48)}
+@media(max-width:640px){.hero h1{font-size:34px}.hero p.lead{font-size:21px}}
+
+/* 섹션 제목 */
+.tile h2.t{font-family:var(--display);font-size:40px;font-weight:600;line-height:1.1;letter-spacing:0;margin:0 0 8px}
+.tile h2.t .n{display:inline-block;font-size:14px;letter-spacing:-.224px;font-weight:600;color:var(--primary);vertical-align:middle;margin-right:12px;font-family:var(--text)}
+.tile p.sub{font-size:21px;font-weight:400;line-height:1.3;letter-spacing:.1px;color:var(--ink-80);margin:0 0 36px;max-width:760px}
+.tile.dark p.sub{color:var(--body-muted)}
+@media(max-width:640px){.tile h2.t{font-size:28px}.tile p.sub{font-size:17px}}
+h3{font-family:var(--text);font-size:21px;font-weight:600;line-height:1.19;letter-spacing:.231px;margin:36px 0 12px}
+
+/* 단계 목록 */
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--hairline)}
+.steps li:last-child{border-bottom:1px solid var(--hairline)}
+.steps li::before{counter-increment:s;content:counter(s);width:44px;height:44px;border-radius:50%;background:var(--parchment);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600}
+.tile.parchment .steps li::before{background:var(--canvas)}
+.steps li p{margin:0}
+.steps .cap{display:block;margin-top:4px;font-size:14px;line-height:1.43;letter-spacing:-.224px;color:var(--ink-48)}
+
+/* 유틸리티 카드 */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.card{background:var(--canvas);border:1px solid var(--hairline);border-radius:var(--r-lg);padding:24px}
+.card h4{margin:0 0 6px;font-size:17px;font-weight:600;line-height:1.24;letter-spacing:-.374px}
+.card p{margin:0;font-size:14px;line-height:1.43;letter-spacing:-.224px;color:var(--ink-80)}
+.card .glyph{font-size:28px;line-height:1;margin-bottom:12px}
+
+/* 안내 문단(파치먼트 캡슐 — 색 액센트 없음) */
+.note{background:var(--parchment);border-radius:var(--r-lg);padding:18px 22px;margin:22px 0;font-size:14px;line-height:1.5;letter-spacing:-.224px;color:var(--ink-80)}
+.tile.parchment .note{background:var(--canvas);border:1px solid var(--hairline)}
+.tile.dark .note{background:var(--tile-dark-2);color:var(--body-muted)}
+
+/* 표 */
+table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.43;letter-spacing:-.224px;margin:12px 0}
+th,td{text-align:left;vertical-align:top;padding:12px 10px;border-bottom:1px solid var(--hairline)}
+th{font-weight:600;color:var(--ink-48);font-size:12px;letter-spacing:-.12px;text-transform:uppercase}
+.tile.dark th,.tile.dark td{border-color:rgba(255,255,255,.12)}
+
+/* 코드 블록 = 다크 타일 */
+pre{background:var(--tile-dark);color:#fff;padding:20px 24px;border-radius:var(--r-lg);overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.6;letter-spacing:0;margin:16px 0}
+
+/* 설정 생성기 */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px}
 @media(max-width:640px){.form{grid-template-columns:1fr}}
-.form label{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:3px}
-.form input{width:100%;padding:9px 11px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:14px}
-.form input:focus{outline:none;border-color:var(--pl)}
+.form label{display:block;font-size:14px;font-weight:600;letter-spacing:-.224px;color:var(--ink-80);margin:0 0 6px 14px}
+.form input{width:100%;height:44px;padding:0 20px;border:1px solid rgba(0,0,0,.08);border-radius:var(--pill);background:var(--canvas);font:inherit;font-size:17px;letter-spacing:-.374px;color:var(--ink)}
+.form input:focus{outline:2px solid var(--primary-focus);outline-offset:1px}
 .form .full{grid-column:1/-1}
-.btn{display:inline-block;padding:9px 15px;border-radius:10px;background:var(--pr);color:#fff;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
-.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
-textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:12.5px;border:1.5px solid var(--line);border-radius:10px;padding:10px;background:#fbfaf6}
-.small{font-size:13px;color:var(--mute)}
-.step{display:flex;gap:12px;margin:8px 0}
-.step b.k{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#eef6ef;color:var(--pr);text-align:center;line-height:26px;font-size:13px}
-details{margin:8px 0}
-summary{cursor:pointer;font-weight:700}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:24px}
+.msg{font-size:14px;letter-spacing:-.224px;color:var(--ink-80)}
+textarea{width:100%;min-height:240px;margin-top:20px;font-family:var(--mono);font-size:12.5px;line-height:1.55;letter-spacing:0;border:1px solid var(--hairline);border-radius:var(--r-lg);padding:16px;background:var(--canvas);color:var(--ink)}
+textarea:focus{outline:2px solid var(--primary-focus)}
+
+/* 접기 */
+details{border-top:1px solid var(--hairline);padding:14px 0}
+summary{cursor:pointer;font-weight:600;list-style:none}
+summary::after{content:'+';float:right;color:var(--primary);font-weight:400}
+details[open] summary::after{content:'−'}
+
+/* 푸터 */
+footer{background:var(--parchment);padding:64px 22px;color:var(--ink-80)}
+footer .in{max-width:980px;margin:0 auto}
+footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-bottom:32px}
+footer h5{margin:0 0 4px;font-size:14px;font-weight:600;letter-spacing:-.224px}
+footer .cols a{display:block;color:var(--ink-80);font-size:17px;line-height:2.41;letter-spacing:0}
+footer .legal{border-top:1px solid var(--hairline);padding-top:20px;font-size:12px;line-height:1.6;letter-spacing:-.12px;color:var(--ink-48)}
 </style>
 </head>
 <body>
-<div class="lay">
-  <nav class="toc">
-    <a href="#s0"><b>0</b>준비물·구조</a>
-    <a href="#s1"><b>1</b>Supabase 만들기</a>
-    <a href="#s2"><b>2</b>설치 SQL 실행</a>
-    <a href="#s3"><b>3</b>GitHub Pages 배포</a>
-    <a href="#s4"><b>4</b>config.js 만들기</a>
-    <a href="#s5"><b>5</b>교사 등록·학생 가입</a>
-    <a href="#s6"><b>6</b>수업에서 쓰기</a>
-    <a href="#s7"><b>7</b>커스터마이징</a>
-    <a href="#s8"><b>8</b>관리·문제 해결</a>
-    <a href="#s9"><b>9</b>라이선스</a>
-    <a href="../" style="margin-top:8px;border-top:1px dashed var(--line)">🏠 꾸러미 홈</a>
-  </nav>
 
-  <main>
-    <h1>📘 우리 반 도구 꾸러미 — 설치 가이드</h1>
-    <p class="lead">질문나무(학생 앱 + 교사 대시보드) · 칭찬도장판 · 진도 트래커를 <b>선생님 각자의 Supabase(무료)</b>에 붙여서 씁니다.
-      학생 데이터는 우리 학교 프로젝트에만 남고, 원작자를 포함해 누구도 볼 수 없습니다. 처음 한 번 <b>40~60분</b>, 이후에는 관리만 하면 됩니다.</p>
+<nav class="gnav"><div class="in">
+  <a href="../">🧰 우리 반 도구 꾸러미</a>
+  <div class="links"><a href="../">홈</a><a href="../question-tree/teacher.html">교사 대시보드</a><a href="https://github.com/scienceisjo/class-kit" target="_blank" rel="noopener">GitHub</a></div>
+</div></nav>
+<div class="subnav"><div class="in">
+  <h2>설치 가이드</h2>
+  <div class="r">
+    <a class="step" href="#s1">Supabase</a><a class="step" href="#s2">SQL</a><a class="step" href="#s3">Pages</a><a class="step" href="#s5">등록·가입</a><a class="step" href="#s7">커스터마이징</a><a class="step" href="#s8">관리</a>
+    <a class="btn sm" href="#s4">config.js 만들기</a>
+  </div>
+</div></div>
 
-    <section id="s0">
-      <h2><span class="n">0</span>준비물과 구조</h2>
-      <ul>
-        <li><b>Supabase 계정</b> (supabase.com, 무료. GitHub 계정으로 가입하면 가장 빠릅니다)</li>
-        <li><b>GitHub 계정</b> (github.com, 무료. 웹페이지를 공짜로 올려 주는 GitHub Pages 를 씁니다)</li>
-        <li>그 외 설치할 프로그램은 <b>없습니다</b>. 전부 브라우저에서 합니다.</li>
-      </ul>
-      <h3>꾸러미 폴더 구조</h3>
+<section class="hero">
+  <h1>선생님 것으로 설치하세요.</h1>
+  <p class="lead">질문나무, 칭찬도장판, 진도 트래커. 학생 데이터는 우리 학교 Supabase 에만 남습니다.</p>
+  <div class="ctas"><a class="btn" href="#s1">시작하기</a><a class="btn ghost" href="#s0">구조 보기</a></div>
+  <p class="fine">처음 한 번 40~60분 · 설치할 프로그램 없음 · 무료</p>
+</section>
+
+<section class="tile parchment" id="s0"><div class="in">
+  <h2 class="t"><span class="n">0</span>준비물과 구조</h2>
+  <p class="sub">필요한 것은 계정 두 개뿐입니다. 나머지는 전부 브라우저에서 합니다.</p>
+  <div class="cards">
+    <div class="card"><div class="glyph">🗄️</div><h4>Supabase 계정</h4><p>supabase.com · 무료. 학생·질문·도장이 저장되는 데이터베이스. GitHub 계정으로 가입하면 가장 빠릅니다.</p></div>
+    <div class="card"><div class="glyph">🐙</div><h4>GitHub 계정</h4><p>github.com · 무료. 웹페이지를 공짜로 올려 주는 GitHub Pages 에 꾸러미를 올립니다.</p></div>
+    <div class="card"><div class="glyph">⚙️</div><h4>고치는 파일은 하나</h4><p>config.js. 학교 이름과 Supabase 키만 넣으면 세 앱이 모두 우리 학교 것이 됩니다.</p></div>
+  </div>
+  <h3>꾸러미 폴더</h3>
 <pre>class-kit/
-├─ index.html            🏠 꾸러미 홈 (설치 상태 자동 점검)
+├─ index.html            꾸러미 홈 · 설치 상태 자동 점검
 ├─ config.js             ⚙️ 고치는 파일은 이것 하나
 ├─ question-tree/        🌳 질문 과수원 (index.html 학생 · teacher.html 교사)
 ├─ stamp-board/          🏅 칭찬도장판
@@ -88,156 +174,160 @@ summary{cursor:pointer;font-weight:700}
 └─ setup/
    ├─ guide.html         📘 이 문서
    ├─ 01_설치.sql        🗄️ Supabase 에 한 번 실행
-   └─ 02_관리_레시피.sql 🧹 초기화·백업·비번 등 필요할 때 조각 실행</pre>
-      <div class="note">세 앱은 <b>같은 Supabase 프로젝트, 같은 교사 계정, 같은 학생 계정</b>을 씁니다. 학생은 한 번 가입하면 질문나무와 칭찬도장판에 같은 아이디로 들어갑니다.</div>
-    </section>
+   └─ 02_관리_레시피.sql 🧹 초기화·백업·비밀번호 등 필요할 때 조각 실행</pre>
+  <div class="note">세 앱은 같은 Supabase 프로젝트, 같은 교사 계정, 같은 학생 계정을 씁니다. 학생은 한 번 가입하면 질문나무와 칭찬도장판에 같은 아이디로 들어갑니다.</div>
+</div></section>
 
-    <section id="s1">
-      <h2><span class="n">1</span>Supabase 프로젝트 만들기 (10분)</h2>
-      <div class="step"><b class="k">1</b><div><a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a> → <b>Start your project</b> → GitHub 로 로그인</div></div>
-      <div class="step"><b class="k">2</b><div><b>New project</b> → Name: <code>class-kit</code>(자유) · Database Password: <b>아무 거나 길게, 메모</b> · Region: <b>Northeast Asia (Tokyo 또는 Seoul)</b> → Create. 2분쯤 기다립니다.</div></div>
-      <div class="step"><b class="k">3</b><div>왼쪽 <b>Authentication → Sign In / Providers → Email</b> → <b>Confirm email</b> 을 <b>끕니다</b>(OFF) → Save.<br>
-        <span class="small">학생은 진짜 이메일 없이 «학년·반·번호»로 만든 가짜 이메일로 가입하므로, 인증 메일을 받을 수 없습니다. 이걸 켜 두면 학생이 가입해도 로그인이 안 됩니다.</span></div></div>
-      <div class="step"><b class="k">4</b><div>왼쪽 아래 <b>Project Settings(⚙️) → API</b> 에서 두 값을 메모장에 복사해 둡니다.<br>
-        · <b>Project URL</b> — <code>https://xxxxxxxx.supabase.co</code><br>
-        · <b>Project API keys → publishable (또는 anon public)</b> — <code>sb_publishable_…</code> 또는 <code>eyJ…</code></div></div>
-      <div class="note warn">⚠️ <b>service_role / secret</b> 키는 절대 복사하지 마세요. 그 키는 모든 보안을 우회합니다. 꾸러미 홈의 설치 점검이 그 키를 발견하면 빨간 경고를 띄웁니다.</div>
-    </section>
+<section class="tile" id="s1"><div class="in">
+  <h2 class="t"><span class="n">1</span>Supabase 프로젝트 만들기</h2>
+  <p class="sub">10분. 프로젝트 하나를 만들고, 설정 하나를 끄고, 값 두 개를 복사합니다.</p>
+  <ol class="steps">
+    <li><p><a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a> → <b>Start your project</b> → GitHub 로 로그인</p></li>
+    <li><p><b>New project</b> → Name <code>class-kit</code>(자유) · Database Password 는 아무 거나 길게 적고 <b>메모</b> · Region <b>Northeast Asia</b> → Create. 2분쯤 기다립니다.</p></li>
+    <li><p><b>Authentication → Sign In / Providers → Email</b> → <b>Confirm email 을 끕니다</b>(OFF) → Save.<span class="cap">학생은 진짜 이메일 없이 «학년·반·번호»로 만든 가짜 이메일로 가입합니다. 이걸 켜 두면 학생이 가입해도 로그인이 되지 않습니다.</span></p></li>
+    <li><p><b>Project Settings(⚙️) → API</b> 에서 두 값을 메모장에 복사해 둡니다.<span class="cap">Project URL — https://xxxxxxxx.supabase.co · Project API keys → publishable(또는 anon public) — sb_publishable_… 또는 eyJ…</span></p></li>
+  </ol>
+  <div class="note">⚠️ service_role / secret 키는 절대 복사하지 마세요. 그 키는 모든 보안을 우회합니다. 꾸러미 홈의 설치 점검이 그 키를 발견하면 경고를 띄웁니다.</div>
+</div></section>
 
-    <section id="s2">
-      <h2><span class="n">2</span>설치 SQL 한 번 실행 (5분)</h2>
-      <div class="step"><b class="k">1</b><div><a href="01_설치.sql" download>setup/01_설치.sql</a> 을 메모장(또는 아무 편집기)으로 엽니다.</div></div>
-      <div class="step"><b class="k">2</b><div>맨 위 <b>PART 0</b>의 <code>'우리학교-교사-2026'</code> 을 우리 학교만의 <b>교사 초대코드</b>로 바꿉니다. 동료 선생님이 교사 등록할 때 입력하는 암호입니다(나중에 대시보드 ⚙️ 관리에서 바꿀 수 있어요).</div></div>
-      <div class="step"><b class="k">3</b><div>Supabase 왼쪽 <b>SQL Editor → New query</b> → 파일 <b>전체</b>를 붙여넣고 <b>Run</b> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>).</div></div>
-      <div class="step"><b class="k">4</b><div>아래 결과표가 <b>전부 ✅</b> 인지 확인합니다. ❌ 가 있으면 파일 전체를 <b>한 번 더 Run</b> 하세요(여러 번 실행해도 안전합니다).</div></div>
-      <div class="note ok">이 파일 하나가 표 22개·함수 30여 개·보안규칙(RLS)을 만듭니다. 학생은 자기 것만, 교사는 담당 학생만 볼 수 있게 서버가 막습니다. Edge Function·CLI 설치는 필요 없습니다.</div>
-    </section>
+<section class="tile parchment" id="s2"><div class="in">
+  <h2 class="t"><span class="n">2</span>설치 SQL 한 번 실행</h2>
+  <p class="sub">5분. 파일 하나가 표 22개, 함수 30여 개, 보안규칙을 만듭니다. 서버 함수나 CLI 설치는 없습니다.</p>
+  <ol class="steps">
+    <li><p><a href="01_설치.sql" download>setup/01_설치.sql</a> 을 메모장으로 엽니다.</p></li>
+    <li><p>맨 위 <b>PART 0</b> 의 <code>'우리학교-교사-2026'</code> 을 우리 학교만의 <b>교사 초대코드</b>로 바꿉니다.<span class="cap">동료 선생님이 교사 등록할 때 입력하는 암호입니다. 나중에 대시보드 ⚙️ 관리에서 바꿀 수 있습니다.</span></p></li>
+    <li><p>Supabase 왼쪽 <b>SQL Editor → New query</b> → 파일 전체를 붙여넣고 <b>Run</b> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>).</p></li>
+    <li><p>아래 결과표가 <b>전부 ✅</b> 인지 확인합니다.<span class="cap">❌ 가 있으면 파일 전체를 한 번 더 Run 하세요. 여러 번 실행해도 안전합니다.</span></p></li>
+  </ol>
+</div></section>
 
-    <section id="s3">
-      <h2><span class="n">3</span>GitHub Pages 에 올리기 (10분)</h2>
-      <div class="step"><b class="k">1</b><div>꾸러미 저장소 페이지에서 초록 <b>Use this template → Create a new repository</b> (없으면 <b>Fork</b>). Repository name: <code>class-kit</code>(자유) · <b>Public</b> → Create.</div></div>
-      <div class="step"><b class="k">2</b><div>새 저장소에서 <b>Settings → Pages</b> → Build and deployment: <b>Deploy from a branch</b> → Branch <b>main</b> / <b>/(root)</b> → Save.</div></div>
-      <div class="step"><b class="k">3</b><div>1~2분 뒤 같은 화면 위에 주소가 뜹니다: <code>https://아이디.github.io/class-kit/</code> — 이것이 <b>꾸러미 홈</b>입니다. 학생 앱 주소는 <code>…/class-kit/question-tree/</code>.</div></div>
-      <div class="note">주소를 열었는데 «아직 설정이 없어요»가 뜨면 정상입니다. 다음 단계에서 config.js 를 넣으면 사라집니다.</div>
-    </section>
+<section class="tile" id="s3"><div class="in">
+  <h2 class="t"><span class="n">3</span>GitHub Pages 에 올리기</h2>
+  <p class="sub">10분. 저장소를 복제하고 Pages 를 켜면 주소가 생깁니다.</p>
+  <ol class="steps">
+    <li><p>꾸러미 저장소 <a href="https://github.com/scienceisjo/class-kit" target="_blank" rel="noopener">github.com/scienceisjo/class-kit</a> 에서 초록 <b>Use this template → Create a new repository</b>. Repository name <code>class-kit</code>(자유) · <b>Public</b> → Create.</p></li>
+    <li><p>새 저장소에서 <b>Settings → Pages</b> → Build and deployment <b>Deploy from a branch</b> → Branch <b>main</b> / <b>/(root)</b> → Save.</p></li>
+    <li><p>1~2분 뒤 같은 화면 위에 주소가 뜹니다. <code>https://아이디.github.io/class-kit/</code> 가 <b>꾸러미 홈</b>, <code>…/class-kit/question-tree/</code> 가 <b>학생 앱</b>입니다.</p></li>
+  </ol>
+  <div class="note">주소를 열었는데 «아직 설정이 없어요»가 뜨면 정상입니다. 다음 단계에서 config.js 를 넣으면 사라집니다.</div>
+</div></section>
 
-    <section id="s4">
-      <h2><span class="n">4</span>config.js 만들기 — 설정 생성기 (5분)</h2>
-      <p>아래 칸을 채우고 <b>config.js 만들기</b>를 누르면 파일 내용이 만들어집니다. 그걸 GitHub 의 <code>config.js</code> 에 통째로 붙여넣으면 끝입니다.</p>
-      <div class="form">
-        <div><label>학교 이름 *</label><input id="fName" placeholder="예: 해솔중학교"></div>
-        <div><label>짧은 이름 (CSV 파일명·리포트 제목)</label><input id="fShort" placeholder="예: 해솔 (비우면 자동)"></div>
-        <div><label>운영 선생님 성함</label><input id="fTeacher" placeholder="예: 김영재"></div>
-        <div><label>담당 교과</label><input id="fSubject" value="과학"></div>
-        <div class="full"><label>Supabase Project URL *</label><input id="fUrl" placeholder="https://xxxxxxxx.supabase.co"></div>
-        <div class="full"><label>Supabase publishable / anon 키 *</label><input id="fKey" placeholder="sb_publishable_… 또는 eyJ…"></div>
-        <div><label>학생 아이디 도메인</label><input id="fDom" value="student.school"></div>
-        <div><label>질문 앱 이름</label><input id="fQ" value="질문 과수원"></div>
-        <div><label>도장판 이름</label><input id="fS" value="칭찬도장판"></div>
-        <div><label>진도 트래커 이름</label><input id="fP" value="진도 트래커"></div>
-      </div>
-      <div class="row">
-        <button class="btn" onclick="genConfig()">⚙️ config.js 만들기</button>
-        <button class="btn ghost" id="copyBtn" onclick="copyConfig()" disabled>📋 복사</button>
-        <button class="btn ghost" id="dlBtn" onclick="dlConfig()" disabled>⬇️ config.js 내려받기</button>
-        <span class="small" id="genMsg"></span>
-      </div>
-      <textarea id="out" placeholder="여기에 config.js 내용이 만들어집니다" readonly></textarea>
-      <h3>GitHub 에 넣는 법</h3>
-      <div class="step"><b class="k">1</b><div>내 저장소에서 <code>config.js</code> 파일을 클릭 → 오른쪽 위 <b>연필(Edit)</b> 아이콘</div></div>
-      <div class="step"><b class="k">2</b><div>기존 내용을 <b>전부 지우고</b> 위에서 복사한 내용을 붙여넣기 → 오른쪽 위 <b>Commit changes…</b> → Commit</div></div>
-      <div class="step"><b class="k">3</b><div>1~2분 뒤 꾸러미 홈을 새로고침(<kbd>Ctrl</kbd>+<kbd>F5</kbd>). «설치 상태»가 전부 ✅ 이면 완료.</div></div>
-      <div class="note">생성기는 이 파일이 있는 저장소의 <code>config.js</code> 를 바탕으로 필수 칸만 바꿔 줍니다. 나머지(역량 이름·보상·과목 목록 등)는 7단계에서 파일을 직접 고칩니다.</div>
-    </section>
+<section class="tile parchment" id="s4"><div class="in">
+  <h2 class="t"><span class="n">4</span>config.js 만들기</h2>
+  <p class="sub">5분. 아래 칸을 채우고 단추를 누르면 파일 내용이 만들어집니다. GitHub 의 config.js 에 통째로 붙여넣으면 끝입니다.</p>
+  <div class="form">
+    <div><label>학교 이름 *</label><input id="fName" placeholder="예: 해솔중학교"></div>
+    <div><label>짧은 이름</label><input id="fShort" placeholder="예: 해솔 (비우면 자동)"></div>
+    <div><label>운영 선생님 성함</label><input id="fTeacher" placeholder="예: 김영재"></div>
+    <div><label>담당 교과</label><input id="fSubject" value="과학"></div>
+    <div class="full"><label>Supabase Project URL *</label><input id="fUrl" placeholder="https://xxxxxxxx.supabase.co"></div>
+    <div class="full"><label>Supabase publishable / anon 키 *</label><input id="fKey" placeholder="sb_publishable_… 또는 eyJ…"></div>
+    <div><label>학생 아이디 도메인</label><input id="fDom" value="student.school"></div>
+    <div><label>질문 앱 이름</label><input id="fQ" value="질문 과수원"></div>
+    <div><label>도장판 이름</label><input id="fS" value="칭찬도장판"></div>
+    <div><label>진도 트래커 이름</label><input id="fP" value="진도 트래커"></div>
+  </div>
+  <div class="row">
+    <button class="btn" onclick="genConfig()">config.js 만들기</button>
+    <button class="btn ghost" id="copyBtn" onclick="copyConfig()" disabled>복사</button>
+    <button class="btn ghost" id="dlBtn" onclick="dlConfig()" disabled>내려받기</button>
+    <span class="msg" id="genMsg"></span>
+  </div>
+  <textarea id="out" placeholder="여기에 config.js 내용이 만들어집니다" readonly></textarea>
+  <h3>GitHub 에 넣는 법</h3>
+  <ol class="steps">
+    <li><p>내 저장소에서 <code>config.js</code> 파일을 클릭 → 오른쪽 위 <b>연필(Edit)</b></p></li>
+    <li><p>기존 내용을 <b>전부 지우고</b> 복사한 내용을 붙여넣기 → <b>Commit changes…</b> → Commit</p></li>
+    <li><p>1~2분 뒤 꾸러미 홈을 새로고침(<kbd>Ctrl</kbd>+<kbd>F5</kbd>). «설치 상태»가 전부 ✅ 이면 완료.</p></li>
+  </ol>
+  <div class="note">생성기는 이 저장소의 config.js 를 바탕으로 필수 칸만 바꿔 줍니다. 역량 이름·보상·과목 목록 같은 나머지는 7단계에서 파일을 직접 고칩니다.</div>
+</div></section>
 
-    <section id="s5">
-      <h2><span class="n">5</span>교사 등록 → 학생 가입</h2>
-      <h3>교사</h3>
-      <ol>
-        <li><code>…/question-tree/teacher.html</code> 열기 → <b>회원가입</b> 탭</li>
-        <li>성함 · 담당 과목 · 학년 · <b>진짜 이메일</b> · 비밀번호 · <b>교사 초대코드</b>(2단계에서 정한 것) → 가입</li>
-        <li>이 계정 하나로 교사 대시보드·칭찬도장판·진도 트래커에 모두 로그인합니다.</li>
-      </ol>
-      <h3>학생</h3>
-      <ol>
-        <li>칠판에 학생 앱 주소(<code>…/question-tree/</code>) 또는 QR 을 띄웁니다.</li>
-        <li>학생: <b>가입</b> → 학년 · 반 · 번호 · 이름 · 비밀번호(4자 이상) → 완료. 이메일은 필요 없습니다.</li>
-        <li>같은 학년·반·번호로는 한 번만 가입됩니다. 비밀번호를 잊으면 교사 대시보드 학생 목록의 <b>🔑</b> 로 초기화.</li>
-      </ol>
-      <div class="note">학생 아이디는 내부적으로 <code>s2_3_15@student.school</code> 같은 가짜 이메일입니다. 도메인은 config.js 의 <code>studentEmailDomain</code> 이며, <b>학생이 가입한 뒤에는 바꾸지 마세요</b>(바꾸면 로그인이 안 됩니다).</div>
-    </section>
+<section class="tile" id="s5"><div class="in">
+  <h2 class="t"><span class="n">5</span>교사 등록, 학생 가입</h2>
+  <p class="sub">교사는 초대코드로 한 번, 학생은 학년·반·번호로 스스로.</p>
+  <div class="cards">
+    <div class="card"><div class="glyph">🧑‍🏫</div><h4>교사</h4><p><code>…/question-tree/teacher.html</code> → 회원가입 탭 → 성함 · 담당 과목 · 학년 · 진짜 이메일 · 비밀번호 · <b>교사 초대코드</b> → 가입. 이 계정 하나로 교사 대시보드·칭찬도장판·진도 트래커에 모두 로그인합니다.</p></div>
+    <div class="card"><div class="glyph">🎒</div><h4>학생</h4><p>칠판에 학생 앱 주소(<code>…/question-tree/</code>) 또는 QR 을 띄웁니다. 학생은 가입 → 학년 · 반 · 번호 · 이름 · 비밀번호(4자 이상) → 완료. 이메일은 필요 없습니다. 같은 학년·반·번호로는 한 번만 가입됩니다.</p></div>
+    <div class="card"><div class="glyph">🔑</div><h4>비밀번호를 잊으면</h4><p>교사 대시보드 학생 목록의 🔑 로 초기화합니다. 학생 아이디는 내부적으로 <code>s2_3_15@student.school</code> 같은 가짜 이메일이며, 도메인은 config.js 의 studentEmailDomain 입니다. <b>학생이 가입한 뒤에는 바꾸지 마세요.</b></p></div>
+  </div>
+</div></section>
 
-    <section id="s6">
-      <h2><span class="n">6</span>수업에서 쓰기 — 짧게</h2>
-      <table>
-        <tr><th style="width:130px">앱</th><th>교사가 하는 일</th><th>학생이 하는 일</th></tr>
-        <tr><td>🌳 질문 과수원</td><td>수업 시작에 대시보드에서 <b>📑 지금 차시</b> 켜기 → 질문에 되묻기(🌿) · ⭐ 대표 질문 · 🏷️ 라벨 · 주간 리포트</td><td>질문 심기 → 다듬기 → 스스로 해결하기 → 열매</td></tr>
-        <tr><td>🏅 칭찬도장판</td><td>차시당 <b>3명</b>만 목표로 «관찰된 행동» 한 문장과 함께 도장. 골든벨·쿠폰 승인</td><td>캐릭터 고르기·키우기, 잔액으로 보상 교환</td></tr>
-        <tr><td>📊 진도 트래커</td><td>수업 끝나고 칸 하나 클릭. 메모(✎)로 «이 반은 실험 못 함» 남기기</td><td>(교사용)</td></tr>
-      </table>
-      <p class="small">질문 과수원 ⭐ 를 누르면 칭찬도장판에 도장이 함께 찍힙니다(같은 학생 계정이라서). 도장판의 «차시 이름»과 과수원의 «지금 차시»를 같은 이름으로 쓰면 두 기록이 한 이름으로 모입니다.</p>
-    </section>
+<section class="tile dark" id="s6"><div class="in">
+  <h2 class="t"><span class="n" style="color:var(--primary-on-dark)">6</span>수업에서 쓰기</h2>
+  <p class="sub">짧게. 교사가 하는 일과 학생이 하는 일.</p>
+  <table>
+    <tr><th style="width:150px">앱</th><th>교사</th><th>학생</th></tr>
+    <tr><td>🌳 질문 과수원</td><td>수업 시작에 대시보드에서 <b>📑 지금 차시</b> 켜기 → 질문에 되묻기(🌿) · ⭐ 대표 질문 · 🏷️ 라벨 · 주간 리포트</td><td>질문 심기 → 다듬기 → 스스로 해결하기 → 열매</td></tr>
+    <tr><td>🏅 칭찬도장판</td><td>차시당 <b>3명</b>만 목표로 «관찰된 행동» 한 문장과 함께 도장. 골든벨 · 쿠폰 승인</td><td>캐릭터 고르기·키우기, 잔액으로 보상 교환</td></tr>
+    <tr><td>📊 진도 트래커</td><td>수업 끝나고 칸 하나 클릭. 메모(✎)로 «이 반은 실험 못 함» 남기기</td><td class="muted">교사용</td></tr>
+  </table>
+  <p class="muted" style="font-size:14px;letter-spacing:-.224px;margin-top:18px">질문 과수원 ⭐ 를 누르면 칭찬도장판에 도장이 함께 찍힙니다. 도장판의 «차시 이름»과 과수원의 «지금 차시»를 같은 이름으로 쓰면 두 기록이 한 이름으로 모입니다.</p>
+</div></section>
 
-    <section id="s7">
-      <h2><span class="n">7</span>커스터마이징 — config.js 안내</h2>
-      <p>전부 <code>config.js</code> 한 파일입니다. 값을 비우면 기본값, 넣으면 그 값. 파일 안에 주석으로 설명이 있습니다.</p>
-      <table>
-        <tr><th style="width:190px">항목</th><th>바꿀 수 있는 것</th></tr>
-        <tr><td><code>school</code> · <code>supabase</code></td><td>학교 이름·짧은 이름·선생님·교과 / Supabase 주소·키 (필수)</td></tr>
-        <tr><td><code>brand</code></td><td>앱 이름 세 개, 부제, 로고 파일 경로(예: <code>assets/logo.png</code> 를 저장소에 올리고 경로 지정)</td></tr>
-        <tr><td><code>theme</code></td><td>앱별 색. CSS 변수 이름으로 적습니다 — 예: <code>'--pr':'#0b5fa5'</code>. 자주 쓰는 변수는 파일 주석에 있고, 전체 목록은 각 HTML 맨 위 <code>:root</code></td></tr>
-        <tr><td><code>stamp.competencies</code></td><td>역량 6종의 이름(칩·교사용·학생용)·아이콘·색·행동 칩 문장. 과학이 아닌 교과는 여기만 고치면 됩니다. <b>코드(inquiry …)는 그림과 묶여 있어 못 바꿉니다.</b></td></tr>
-        <tr><td><code>stamp.rewards / honors / howToEarn</code></td><td>소비형 보상(잔액 차감) · 명예형 보상(누적 15·20개 자동) · «이럴 때 도장» 안내</td></tr>
-        <tr><td><code>stamp.themes</code></td><td>캐릭터 테마 4종의 이름과 7단계 이름</td></tr>
-        <tr><td><code>question.subjects</code></td><td>학생이 «과목 추가»할 때 고르는 목록. <code>integrated</code> 는 기본 과목이라 지우지 마세요</td></tr>
-        <tr><td><code>question.pickMax / learnerText / aiTeacherText</code></td><td>차시당 대표 질문 수 · AI 프롬프트에서 학생·교사를 부르는 말(«고등학교 1학년» 등)</td></tr>
-        <tr><td><code>progress.boards / lessonBank</code></td><td>처음 만들어 둘 진도표(반·수업 횟수·차시) · «＋ 차시 고르기» 목록</td></tr>
-        <tr><td><code>credits</code></td><td>원작 표기(바꾸지 않아도 됩니다)</td></tr>
-      </table>
-      <div class="note warn">config.js 는 자바스크립트라서 <b>따옴표 짝·쉼표 하나</b>가 틀리면 파일이 읽히지 않고 «아직 설정이 없어요»가 뜹니다. 고친 뒤에는 꾸러미 홈의 설치 상태를 확인하세요.</div>
-      <details><summary>서버(SQL)에서 바꾸는 것</summary>
-        <ul>
-          <li><b>하루 질문 상한</b>(하루 8개·차시당 3개): 교사 대시보드 <b>⚙️ 관리</b> 또는 <code>02_관리_레시피.sql</code> ③</li>
-          <li><b>캐릭터 진화 단계 도장 수</b>(0/1/3/6/10/15/20): 서버 함수와 묶여 있어 바꾸지 않는 것을 권합니다.</li>
-        </ul>
-      </details>
-    </section>
+<section class="tile" id="s7"><div class="in">
+  <h2 class="t"><span class="n">7</span>커스터마이징</h2>
+  <p class="sub">전부 config.js 한 파일입니다. 값을 비우면 기본값, 넣으면 그 값. 파일 안에 주석으로 설명이 있습니다.</p>
+  <table>
+    <tr><th style="width:230px">항목</th><th>바꿀 수 있는 것</th></tr>
+    <tr><td><code>school</code> · <code>supabase</code></td><td>학교 이름·짧은 이름·선생님·교과 / Supabase 주소·키 (필수)</td></tr>
+    <tr><td><code>brand</code></td><td>앱 이름 세 개, 부제, 로고 파일 경로 (예: <code>assets/logo.png</code> 를 저장소에 올리고 경로 지정)</td></tr>
+    <tr><td><code>theme</code></td><td>앱별 색. CSS 변수 이름으로 적습니다. 예: <code>'--pr':'#0b5fa5'</code>. 자주 쓰는 변수는 파일 주석에, 전체 목록은 각 HTML 맨 위 <code>:root</code></td></tr>
+    <tr><td><code>stamp.competencies</code></td><td>역량 6종의 이름(칩·교사용·학생용)·아이콘·색·행동 칩 문장. 과학이 아닌 교과는 여기만 고치면 됩니다. 코드(inquiry …)는 그림과 묶여 있어 바꾸지 않습니다.</td></tr>
+    <tr><td><code>stamp.rewards / honors / howToEarn</code></td><td>소비형 보상(잔액 차감) · 명예형 보상(누적 15·20개 자동) · «이럴 때 도장» 안내</td></tr>
+    <tr><td><code>stamp.themes</code></td><td>캐릭터 테마 4종의 이름과 7단계 이름</td></tr>
+    <tr><td><code>question.subjects</code></td><td>학생이 «과목 추가»할 때 고르는 목록. <code>integrated</code> 는 기본 과목이라 지우지 않습니다.</td></tr>
+    <tr><td><code>question.pickMax / learnerText / aiTeacherText</code></td><td>차시당 대표 질문 수 · AI 프롬프트에서 학생·교사를 부르는 말 («고등학교 1학년» 등)</td></tr>
+    <tr><td><code>progress.boards / lessonBank</code></td><td>처음 만들어 둘 진도표(반·수업 횟수·차시) · «＋ 차시 고르기» 목록</td></tr>
+    <tr><td><code>credits</code></td><td>원작 표기 (바꾸지 않아도 됩니다)</td></tr>
+  </table>
+  <div class="note">⚠️ config.js 는 자바스크립트라서 따옴표 짝·쉼표 하나가 틀리면 파일이 읽히지 않고 «아직 설정이 없어요»가 뜹니다. 고친 뒤에는 꾸러미 홈의 설치 상태를 확인하세요.</div>
+  <details><summary>서버(SQL)에서 바꾸는 것</summary>
+    <p>하루 질문 상한(하루 8개·차시당 3개)은 교사 대시보드 <b>⚙️ 관리</b> 또는 <code>02_관리_레시피.sql</code> ③ 에서 바꿉니다. 캐릭터 진화 단계 도장 수(0/1/3/6/10/15/20)는 서버 함수와 묶여 있어 바꾸지 않는 것을 권합니다.</p>
+  </details>
+</div></section>
 
-    <section id="s8">
-      <h2><span class="n">8</span>관리와 문제 해결</h2>
-      <h3>관리 — 대시보드 ⚙️ 관리 / 02_관리_레시피.sql</h3>
-      <ul>
-        <li>교사 초대코드 보기·바꾸기 / 하루 질문 상한 → 대시보드 <b>⚙️ 관리</b></li>
-        <li>학생 비밀번호 초기화 → 학생 목록 🔑 (또는 레시피 ④)</li>
-        <li>학년 말 정리·졸업·전체 초기화·백업(CSV) → <code>setup/02_관리_레시피.sql</code> 의 조각 ⑥ ⑦ ⑧ (통째로 실행 금지)</li>
-        <li>Supabase 무료 프로젝트는 <b>1주일 동안 아무도 안 쓰면 일시정지(Paused)</b>됩니다. 방학 뒤 첫 수업 전에 supabase.com 에서 <b>Restore</b> 를 눌러 주세요.</li>
-      </ul>
-      <h3>자주 겪는 문제</h3>
-      <table>
-        <tr><th style="width:280px">증상</th><th>원인 → 해결</th></tr>
-        <tr><td>«아직 설정이 없어요»가 계속 뜸</td><td>config.js 가 없거나 문법 오류. 생성기로 다시 만들어 붙여넣고, <kbd>Ctrl</kbd>+<kbd>F5</kbd> 로 캐시 무시 새로고침</td></tr>
-        <tr><td>Invalid API key</td><td>키를 잘못 복사. Project Settings → API 의 publishable(anon) 키를 다시</td></tr>
-        <tr><td>학생이 가입했는데 로그인이 안 됨 / Email not confirmed</td><td>1단계 ③ Confirm email 이 켜져 있음 → 끄고, 이미 가입한 학생은 레시피 ⑤로 지운 뒤 재가입</td></tr>
-        <tr><td>«could not find the function …» / PGRST202</td><td>설치 SQL 미실행 또는 일부 실패 → 01_설치.sql 전체를 다시 Run</td></tr>
-        <tr><td>교사 등록 시 «초대코드가 올바르지 않습니다»</td><td>01_설치.sql PART 0 의 코드와 다름 → 레시피 ②로 확인</td></tr>
-        <tr><td>페이지가 404</td><td>Settings → Pages 가 main / root 인지, 주소 끝에 <code>/class-kit/</code>(저장소 이름)가 맞는지</td></tr>
-        <tr><td>이미지·소리가 안 나옴</td><td>저장소에 <code>question-tree/assets</code>, <code>stamp-board/audio</code>, <code>stamp-board/images</code> 폴더가 그대로 올라갔는지</td></tr>
-        <tr><td>갑자기 아무것도 안 됨(방학 뒤)</td><td>Supabase 프로젝트 일시정지 → supabase.com 에서 Restore</td></tr>
-      </table>
-    </section>
+<section class="tile parchment" id="s8"><div class="in">
+  <h2 class="t"><span class="n">8</span>관리와 문제 해결</h2>
+  <p class="sub">대시보드 ⚙️ 관리와 02_관리_레시피.sql 로 대부분 해결됩니다.</p>
+  <div class="cards">
+    <div class="card"><h4>초대코드 · 하루 상한</h4><p>대시보드 <b>⚙️ 관리</b> 에서 보고 바꿉니다.</p></div>
+    <div class="card"><h4>학생 비밀번호</h4><p>학생 목록 🔑, 또는 레시피 ④.</p></div>
+    <div class="card"><h4>학년 말 정리 · 백업</h4><p><code>setup/02_관리_레시피.sql</code> 의 조각 ⑥ ⑦ ⑧. 통째로 실행하지 마세요.</p></div>
+    <div class="card"><h4>방학 뒤 첫 수업 전</h4><p>무료 Supabase 는 1주일 동안 아무도 안 쓰면 일시정지(Paused)됩니다. supabase.com 에서 <b>Restore</b>.</p></div>
+  </div>
+  <h3>자주 겪는 문제</h3>
+  <table>
+    <tr><th style="width:300px">증상</th><th>원인 → 해결</th></tr>
+    <tr><td>«아직 설정이 없어요»가 계속 뜸</td><td>config.js 가 없거나 문법 오류. 생성기로 다시 만들어 붙여넣고 <kbd>Ctrl</kbd>+<kbd>F5</kbd></td></tr>
+    <tr><td>Invalid API key</td><td>키를 잘못 복사. Project Settings → API 의 publishable(anon) 키를 다시</td></tr>
+    <tr><td>학생이 가입했는데 로그인이 안 됨 / Email not confirmed</td><td>1단계 ③ Confirm email 이 켜져 있음 → 끄고, 이미 가입한 학생은 레시피 ⑤로 지운 뒤 재가입</td></tr>
+    <tr><td>could not find the function … / PGRST202</td><td>설치 SQL 미실행 또는 일부 실패 → 01_설치.sql 전체를 다시 Run</td></tr>
+    <tr><td>교사 등록 시 «초대코드가 올바르지 않습니다»</td><td>01_설치.sql PART 0 의 코드와 다름 → 레시피 ②로 확인</td></tr>
+    <tr><td>페이지가 404</td><td>Settings → Pages 가 main / root 인지, 주소 끝에 저장소 이름(<code>/class-kit/</code>)이 맞는지</td></tr>
+    <tr><td>이미지·소리가 안 나옴</td><td><code>question-tree/assets</code>, <code>stamp-board/audio</code>, <code>stamp-board/images</code> 폴더가 그대로 올라갔는지</td></tr>
+    <tr><td>갑자기 아무것도 안 됨 (방학 뒤)</td><td>Supabase 프로젝트 일시정지 → supabase.com 에서 Restore</td></tr>
+  </table>
+</div></section>
 
-    <section id="s9">
-      <h2><span class="n">9</span>라이선스와 표기</h2>
-      <p>이 꾸러미는 <b>조승재(과학이조선생)</b>가 만들었고 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" target="_blank" rel="noopener"><b>CC BY-NC-SA 4.0</b></a> 으로 나눕니다.</p>
-      <ul>
-        <li><b>저작자 표시</b> — 각 앱 푸터의 «원작 © 조승재(과학이조선생)» 표기를 남겨 주세요. 학교·선생님 이름은 config.js 로 그 옆에 붙습니다.</li>
-        <li><b>비영리</b> — 수업·연수·학교 안에서는 자유롭게. 판매하거나 유료 서비스에 넣을 수 없습니다.</li>
-        <li><b>동일조건변경허락</b> — 고쳐서 나눌 때도 같은 라이선스로.</li>
-      </ul>
-      <p class="small">문의·개선 제안은 원작자 홈페이지(<a href="https://scienceisjo.github.io/growing-teachers/" target="_blank" rel="noopener">scienceisjo.github.io/growing-teachers</a>)로.</p>
-    </section>
-  </main>
-</div>
+<section class="tile" id="s9"><div class="in narrow" style="text-align:center">
+  <h2 class="t"><span class="n">9</span>라이선스</h2>
+  <p class="sub" style="margin-left:auto;margin-right:auto">조승재(과학이조선생)가 만들었고 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> 으로 나눕니다. 마음껏 가져다 쓰세요.</p>
+  <div class="cards" style="text-align:left">
+    <div class="card"><h4>이름은 선생님 것으로</h4><p>푸터 표기는 config.js 의 <code>credits</code> 에서 자유롭게 바꿀 수 있습니다. 원작 표기를 남겨 주시면 고맙지만, 선생님 이름을 넣어 쓰셔도 괜찮습니다.</p></div>
+    <div class="card"><h4>비영리</h4><p>수업·연수·학교 안에서는 자유롭게. 판매하거나 유료 서비스에 넣을 수 없습니다.</p></div>
+    <div class="card"><h4>동일조건변경허락</h4><p>고쳐서 나눌 때도 같은 라이선스로.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="in">
+  <div class="cols">
+    <div><h5>꾸러미</h5><a href="../">홈</a><a href="../question-tree/">질문 과수원</a><a href="../question-tree/teacher.html">교사 대시보드</a><a href="../stamp-board/">칭찬도장판</a><a href="../progress/">진도 트래커</a></div>
+    <div><h5>설치</h5><a href="#s1">Supabase</a><a href="#s2">설치 SQL</a><a href="#s3">GitHub Pages</a><a href="#s4">config.js</a></div>
+    <div><h5>참고</h5><a href="01_설치.sql" download>01_설치.sql</a><a href="02_관리_레시피.sql" download>02_관리_레시피.sql</a><a href="https://github.com/scienceisjo/class-kit" target="_blank" rel="noopener">GitHub 저장소</a><a href="https://scienceisjo.github.io/growing-teachers/" target="_blank" rel="noopener">원작자 홈페이지</a></div>
+  </div>
+  <div class="legal">원작 © 2026 조승재(과학이조선생) · CC BY-NC-SA 4.0 · 우리 반 도구 꾸러미 2026.09</div>
+</div></footer>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -283,7 +373,7 @@ async function genConfig(){
   generated = src; $('out').value = src; $('copyBtn').disabled = false; $('dlBtn').disabled = false;
   if(!msg.textContent) msg.textContent = '✅ 만들었어요. 복사해서 GitHub 의 config.js 에 붙여넣으세요.';
 }
-async function copyConfig(){ try{ await navigator.clipboard.writeText(generated); $('genMsg').textContent = '📋 복사했어요'; }catch(e){ $('out').select(); document.execCommand('copy'); $('genMsg').textContent = '📋 복사했어요'; } }
+async function copyConfig(){ try{ await navigator.clipboard.writeText(generated); $('genMsg').textContent = '복사했어요'; }catch(e){ $('out').select(); document.execCommand('copy'); $('genMsg').textContent = '복사했어요'; } }
 function dlConfig(){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([generated], {type:'text/javascript'})); a.download = 'config.js'; a.click(); URL.revokeObjectURL(a.href); }
 const FALLBACK = `/* 우리 반 도구 꾸러미 — 최소 설정 (전체 항목은 저장소의 config.js 참고) */
 window.CLASS_KIT_CONFIG = {

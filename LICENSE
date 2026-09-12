@@ -9,9 +9,9 @@ You are free to:
   Adapt — remix, transform, and build upon the material
 
 Under the following terms:
-  Attribution   — You must give appropriate credit (keep the "원작 © 조승재(과학이조선생)"
-                  notice in each app's footer), provide a link to the license, and indicate
-                  if changes were made.
+  Attribution   — Give appropriate credit and a link to the license. Teachers may put
+                  their own name in the app footers (config.js → credits); keeping the
+                  original author notice is appreciated but not required by the author.
   NonCommercial — You may not use the material for commercial purposes.
   ShareAlike    — If you remix, transform, or build upon the material, you must distribute
                   your contributions under the same license as the original.

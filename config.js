@@ -152,7 +152,7 @@ window.CLASS_KIT_CONFIG = {
     ]
   },
 
-  /* ── ⑥ 표기 (바꾸지 않아도 됩니다) ────────────────────────────────────── */
+  /* ── ⑥ 표기 — 선생님 이름으로 바꿔 쓰셔도 괜찮습니다 ─────────────────────── */
   credits: {
     author:     '조승재(과학이조선생)',
     authorUrl:  'https://scienceisjo.github.io/growing-teachers/',
