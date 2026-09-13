@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏅 도장판 세계관 팩 미리보기</title>
+<style>
+:root{--paper:#FBF6E9;--card:#FFFDF7;--ink:#3A3226;--ink2:#6B5F4E;--mute:#A39682;--line:#E0D3B8;--ac:#C2703E;--ac-d:#9C5427;
+  --font:'Pretendard Variable',Pretendard,-apple-system,system-ui,'Malgun Gothic',sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+h1{font-size:clamp(20px,3.4vw,28px);margin:0 0 4px}
+.sub{color:var(--ink2);font-size:14px;margin:0 0 16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font:inherit;font-weight:800;cursor:pointer;font-size:14px}
+.tab.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.tab small{font-weight:600;opacity:.75;margin-left:4px}
+.ctl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:14px}
+.ctl label{font-weight:800;font-size:14px}
+.ctl input[type=range]{width:min(320px,60vw)}
+.ctl .n{font-weight:900;color:var(--ac-d);min-width:110px}
+.meta{font-size:13px;color:var(--ink2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.cell{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 8px;text-align:center}
+.cell svg,.cell img{width:100%;height:auto;display:block}
+.cell .nm{font-weight:900;font-size:14px;margin-top:6px}
+.cell .lb{font-size:12px;color:var(--mute)}
+h2{font-size:16px;margin:26px 0 10px}
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px}
+.strip .st{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 4px;text-align:center}
+.strip .st svg,.strip .st img{width:100%;height:auto}
+.strip .st .t{font-size:11px;font-weight:800;margin-top:3px}
+.strip .st .c{font-size:10px;color:var(--mute)}
+.row{display:flex;align-items:center;gap:8px;margin:14px 0 4px;font-weight:900}
+.row .sw{width:12px;height:12px;border-radius:50%;display:inline-block}
+.base{display:flex;gap:8px;flex-wrap:wrap}
+.base span{padding:6px 12px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-size:13px;font-weight:800}
+.note{font-size:13px;color:var(--ink2);background:#fff;border:1.5px dashed var(--line);border-radius:12px;padding:10px 14px;margin-top:20px;line-height:1.6}
+@media(max-width:640px){.strip{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🏅 도장판 세계관 팩 미리보기</h1>
+  <p class="sub">팩마다 6갈래 × 7단계. 슬라이더로 도장 수를 바꿔 보세요. 실루엣이 서로 구분되는지, 단계마다 자라 보이는지 여기서 검사합니다. 그림은 전부 <code>packs.js</code> 의 SVG 코드입니다.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="ctl">
+    <label for="n">🏅 도장</label>
+    <input type="range" id="n" min="0" max="20" value="6">
+    <span class="n" id="nLabel"></span>
+    <span class="meta" id="meta"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+  <h2>단계별 성장 (갈래별 7단계)</h2>
+  <div id="strips"></div>
+  <h2>반 공동 성장물</h2>
+  <div class="base" id="base"></div>
+  <div class="note" id="note"></div>
+</div>
+
+<script>
+/* 앱과 같은 갈래 정의(색·이름) — index.html 의 BRANCHES 와 맞춰 둔다 */
+var BRANCHES=[
+  {id:'inquiry',    label:'탐구', icon:'🔬', c:'#5CB86E', d:'#3D8B4F', l:'#BFE6C7', n:{}},
+  {id:'analysis',   label:'해석', icon:'📊', c:'#4A90D9', d:'#2F6BAA', l:'#C3DDF5', n:{}},
+  {id:'concept',    label:'개념', icon:'💡', c:'#E8A93A', d:'#B97A15', l:'#F8E2B4', n:{}},
+  {id:'communicate',label:'소통', icon:'🗣️', c:'#E87BA8', d:'#B94C7B', l:'#F8CFE0', n:{}},
+  {id:'collaborate',label:'협업', icon:'🤝', c:'#8E7CC3', d:'#63539A', l:'#DCD4F0', n:{}},
+  {id:'responsible',label:'책임', icon:'🛡️', c:'#3DA89B', d:'#26786E', l:'#BEE6E0', n:{}}
+];
+var TH=[0,1,3,6,10,15,20];
+var STAGE_NAME=['알','부화','아기','성장기','성숙기','완전체','전설'];
+function branchOf(id){ for(var i=0;i<BRANCHES.length;i++) if(BRANCHES[i].id===id) return BRANCHES[i]; return BRANCHES[0]; }
+function stageOf(n){ var s=0; for(var i=0;i<TH.length;i++){ if(n>=TH[i]) s=i; } return s; }
+</script>
+<script src="packs.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var cur = (location.hash || '').replace('#','') || STAMP_PACKS[0].id;
+if(!packById(cur)) cur = STAMP_PACKS[0].id;
+function esc(s){ var d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+function spName(p,b){ return (p.species && p.species[b.id]) || (b.n && b.n[p.id]) || b.label; }
+
+function drawTabs(){
+  var h='', i, p;
+  for(i=0;i<STAMP_PACKS.length;i++){ p=STAMP_PACKS[i];
+    h += '<button class="tab'+(p.id===cur?' on':'')+'" onclick="pick(\''+p.id+'\')">'+p.emoji+' '+esc(p.name)+'<small>'+esc(p.subject||'')+'</small></button>'; }
+  $('tabs').innerHTML = h;
+}
+function pick(id){ cur=id; location.hash=id; drawTabs(); render(); }
+function render(){
+  var p = packById(cur), n = Number($('n').value), st = stageOf(n), i, b, h='';
+  $('nLabel').textContent = n + '개 → ' + st + '단계 「' + p.stages[st] + '」';
+  $('meta').textContent = p.tagline || '';
+  for(i=0;i<BRANCHES.length;i++){ b=BRANCHES[i];
+    h += '<div class="cell">'+drawPack(p.id, st, b)+'<div class="nm" style="color:'+b.d+'">'+esc(spName(p,b))+'</div><div class="lb">'+b.icon+' '+esc(b.label)+'</div></div>'; }
+  $('grid').innerHTML = h;
+  h='';
+  for(i=0;i<BRANCHES.length;i++){ b=BRANCHES[i];
+    h += '<div class="row"><span class="sw" style="background:'+b.c+'"></span>'+esc(spName(p,b))+' <span style="font-weight:600;color:var(--mute);font-size:12px">'+b.icon+' '+esc(b.label)+'</span></div><div class="strip">';
+    for(var s=0;s<7;s++) h += '<div class="st">'+drawPack(p.id, s, b)+'<div class="t">'+esc(p.stages[s])+'</div><div class="c">'+(TH[s]===0?'시작':'도장 '+TH[s])+'</div></div>';
+    h += '</div>'; }
+  $('strips').innerHTML = h;
+  var bs = p.base || {}; h = '<span>'+esc(bs.title||'(base 없음)')+'</span>';
+  (bs.levels||[]).forEach(function(l,j){ h += '<span>'+esc(l)+' <small style="color:var(--mute)">'+[0,30,80,150][j]+'개~</small></span>'; });
+  $('base').innerHTML = h + (typeof p.baseDraw==='function' ? '<div style="width:100%;max-width:300px">'+p.baseDraw(2,50)+'</div>' : '');
+  $('note').innerHTML = '<b>'+p.emoji+' '+esc(p.name)+'</b> · id <code>'+p.id+'</code> · 배경(bg) '+(typeof p.bg==='function'?'있음':'없음')+' · 반 장면(baseDraw) '+(typeof p.baseDraw==='function'?'있음':'없음')+
+    '<br>교사가 이 팩으로 잠그려면 config.js 에 <code>stamp: { pack: \''+p.id+'\' }</code>. 학생이 고르게 하려면 <code>pack: \'\'</code>(전부) 또는 <code>packs: [\'dino\',\'village\']</code>.';
+}
+$('n').addEventListener('input', render);
+drawTabs(); render();
+</script>
+</body>
+</html>

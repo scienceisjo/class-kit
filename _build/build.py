@@ -21,7 +21,7 @@
 """
 import pathlib, re, shutil, subprocess, sys, json
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]          # …/질문나무/질문나무
+ROOT = pathlib.Path(__file__).resolve().parents[2]          # …/질문나무/질문나무 (Desktop)
 KIT  = ROOT / "class-kit"
 
 OUR_URL    = "https://hmzklbrksfdhzsgwzfyg.supabase.co"
@@ -153,6 +153,10 @@ def main():
     s = read(ROOT / "stamp-board/index.html")
     s = neutralize(s, "stamp-board/index.html"); s = inject_head(s, "stamp-board/index.html"); check_residue(s, "stamp-board/index.html")
     write(KIT / "stamp-board/index.html", s); outs.append(KIT / "stamp-board/index.html")
+    for extra in ["packs.js", "packs-preview.html"]:
+        src = ROOT / "stamp-board" / extra
+        txt = neutralize(read(src), extra); check_residue(txt, "stamp-board/" + extra)
+        write(KIT / "stamp-board" / extra, txt)
     na = copy_tree(ROOT / "stamp-board/audio",  KIT / "stamp-board/audio",  {".mp3", ".ogg", ".wav"})
     ni = copy_tree(ROOT / "stamp-board/images", KIT / "stamp-board/images", {".png", ".webp", ".jpg", ".svg"})
     print(f"stamp-board: audio {na}개, images {ni}개")

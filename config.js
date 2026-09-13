@@ -54,6 +54,12 @@ window.CLASS_KIT_CONFIG = {
 
   /* ── ③ 칭찬도장판 ─────────────────────────────────────────────────────── */
   stamp: {
+    /* 세계관 팩 — 선생님이 정합니다(학생은 못 바꿈). 미리보기: stamp-board/packs-preview.html
+         'dino' 공룡알 · 'village' 동물마을 · 'garden' 텃밭 · 'passport' 세계 여행 여권 (교과 무관)
+         'creature' 탐구생물 · 'scientist' 과학자 · 'lab' 연구소 · 'robot' 로봇        (과학 계열)
+       학생이 고르게 하려면 pack 을 '' 로 비우고, 고를 수 있는 팩을 packs 에 적습니다(비우면 전부). */
+    pack:  'village',
+    packs: [],
     semester1Months: [3, 7],         // 1학기로 치는 달 [시작, 끝] — 그 밖은 2학기
 
     /* 역량 6종. 코드(inquiry …)는 캐릭터 그림·이미지 파일명과 묶여 있어 바꿀 수 없고
@@ -78,8 +84,9 @@ window.CLASS_KIT_CONFIG = {
     },
     general: { teacherLabel:'칭찬', studentLabel:'💐 칭찬' },   // 역량을 고르지 않은 «그냥 칭찬» 도장
 
-    /* 캐릭터 테마 이름 (4테마 × 7단계). 그림은 그대로, 이름만 바뀝니다. */
+    /* 팩의 이름·7단계 이름·6갈래 이름을 바꾸고 싶을 때 (그림은 그대로). 팩 id 별로 적습니다. */
     themes: {
+      // dino: { name:'공룡 키우기', stages:['알','금 간 알','부화','새끼','청소년','성체','전설'], species:{ inquiry:'티라노', analysis:'랩터' } },
       creature:  { name:'탐구생물', stages:['알','부화!','아기','종족 분화','성숙기','완전체','전설'] },
       scientist: { name:'과학자',   stages:['빈손 신입','가운 지급','고글 착용','전공 결정','연구원','박사','석학'] },
       lab:       { name:'연구소',   stages:['빈 터','텐트','작업대','연구동 특화','2층 증축','관측탑','대형 연구소'] },
