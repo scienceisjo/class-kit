@@ -54,10 +54,11 @@ window.CLASS_KIT_CONFIG = {
 
   /* ── ③ 칭찬도장판 ─────────────────────────────────────────────────────── */
   stamp: {
-    /* 세계관 팩 — 선생님이 정합니다(학생은 못 바꿈). 미리보기: stamp-board/packs-preview.html
-         'dino' 공룡알 · 'village' 동물마을 · 'garden' 텃밭 · 'passport' 세계 여행 여권 (교과 무관)
-         'creature' 탐구생물 · 'scientist' 과학자 · 'lab' 연구소 · 'robot' 로봇        (과학 계열)
-       학생이 고르게 하려면 pack 을 '' 로 비우고, 고를 수 있는 팩을 packs 에 적습니다(비우면 전부). */
+    /* 세계관 팩 14종 — 선생님이 정합니다(학생은 못 바꿈). 미리보기: stamp-board/packs-preview.html
+         교과 무관 : 'dino' 공룡알 · 'village' 동물마을 · 'garden' 텃밭 · 'passport' 세계 여행 여권 · 'ocean' 수족관
+                     'space' 우주 탐사 · 'bakery' 빵집 · 'orchestra' 오케스트라 · 'puzzle' 명화 퍼즐 · 'robot' 로봇
+         과학 계열 : 'creature' 탐구생물 · 'scientist' 과학자 · 'lab' 연구소 · 'crystal' 결정 키우기
+       팩마다 6갈래 × 7단계 그림 27장. 학생이 고르게 하려면 pack 을 '' 로 비우고, 고를 수 있는 팩을 packs 에 적습니다(비우면 전부). */
     pack:  'village',
     packs: [],
     semester1Months: [3, 7],         // 1학기로 치는 달 [시작, 끝] — 그 밖은 2학기

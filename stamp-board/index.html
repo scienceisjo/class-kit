@@ -29,7 +29,7 @@
 <meta name="description" content="칭찬을 모으면 나만의 캐릭터가 자라는 과학 칭찬도장판">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="packs.js"></script>
+<script src="packs.js?v=world-packs-20260914"></script>
 <style>
 :root{
   --paper:#FBF6E9; --paper2:#F3EBD6; --card:#FFFDF7;
@@ -257,6 +257,8 @@ main{flex:1;padding:14px 0 90px}
 .pick-i{border:2px solid var(--line);border-radius:14px;padding:9px 5px;background:#fff;text-align:center}
 .pick-i.on{border-color:var(--ac);background:#FFF4EA}
 .pick-i svg,.pick-i img.charimg{width:100%;height:auto}
+/* 밝은 배경의 개별 이미지가 선택 카드 색과 자연스럽게 어울리도록 한다. */
+.dex-i img.charimg,.pick-i img.charimg{mix-blend-mode:multiply}
 .pick-i .t{font-size:11.5px;font-weight:900;margin-top:3px}
 footer{padding:18px 0 26px;text-align:center;color:var(--mute);font-size:11px;font-weight:700;line-height:1.7}
 </style>
@@ -895,7 +897,7 @@ function openDex(theme){
 }
 
 async function pickThemeFromDex(id){
-  await pickTheme(id);   /* 저장 + 도장판 다시 그리기 */
+  if(!await pickTheme(id)) return;   /* 저장 + 도장판 다시 그리기 */
   closeMdl();
   _dexTheme = id;
   openDex(id);
@@ -926,11 +928,36 @@ function openThemePick(){
   h += '<button class="btn ghost" style="margin-top:8px" onclick="closeMdl()">닫기</button>';
   $('mdlIn').innerHTML = h; $('mdl').classList.add('show');
 }
+/* 테마·갈래 저장 — 허용 값인지, 잠금·단계 조건을 만족하는지 확인하고 서버가 돌려준 값까지 대조한다 */
+var _characterChoiceSaving = false;
+async function saveCharacterChoice(field, value){
+  if(_characterChoiceSaving) return false;
+  var allowed = field === 'theme' ? THEMES : (field === 'branch' ? BRANCHES : []);
+  if(!allowed.some(function(item){ return item.id === value; })) return false;
+  if(field === 'theme' && packLocked()) return false;
+  if(field === 'branch' && S.bal.earned < TH[3]) return false;
+  _characterChoiceSaving = true;
+  try{
+    var patch = {updated_at:new Date().toISOString()};
+    patch[field] = value;
+    var result = await sb.from('stamp_profiles').update(patch).eq('student_id', S.user.id).select(field).single();
+    if(result.error || !result.data || result.data[field] !== value){
+      toast('저장하지 못했어요. 잠시 뒤 다시 골라 주세요.');
+      return false;
+    }
+    S.sp[field] = value;
+    return true;
+  }catch(e){
+    toast('저장하지 못했어요. 연결을 확인하고 다시 골라 주세요.');
+    return false;
+  }finally{
+    _characterChoiceSaving = false;
+  }
+}
 async function pickTheme(t){
-  if(packLocked()) return;
-  S.sp.theme = t;
-  await sb.from('stamp_profiles').update({theme:t, updated_at:new Date().toISOString()}).eq('student_id', S.user.id);
+  if(!await saveCharacterChoice('theme', t)) return false;
   openThemePick(); renderBoard(); toast('모습을 바꿨어요!');
+  return true;
 }
 async function saveNick(){
   var v = ($('nickIn').value||'').trim().slice(0,12);
@@ -955,8 +982,7 @@ function openBranchPick(){
   $('mdlIn').innerHTML = h; $('mdl').classList.add('show');
 }
 async function pickBranch(id){
-  S.sp.branch = id;
-  await sb.from('stamp_profiles').update({branch:id, updated_at:new Date().toISOString()}).eq('student_id', S.user.id);
+  if(!await saveCharacterChoice('branch', id)) return;
   closeMdl(); renderBoard(); toast('자랄 모습을 골랐어요!');
 }
 function closeMdl(){ $('mdl').classList.remove('show'); }

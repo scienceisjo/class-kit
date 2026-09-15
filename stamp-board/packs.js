@@ -1680,120 +1680,24 @@ function pkTools(b){
   t.star = function(x,y,r,col){ return sparkle(x,y,r,col||'#FCEE7B'); };
   return t;
 }
-var DINO_SCALE = [0,0,0,0.55,0.74,0.92,1];   /* 3~6단계 몸집 */
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   🥚 공룡알 — 알을 품어 공룡을 키운다
-   6종: 티라노(탐구) · 랩터(해석) · 트리케라톱스(개념) · 프테라노돈(소통) · 브라키오(협업) · 안킬로(책임)
-   ═══════════════════════════════════════════════════════════════════════════ */
-function dinoEggPattern(k){
-  var C=k.C, D=k.D, L=k.L, s='';
-  switch(k.ID){
-    case 'inquiry':     s += k.LN('M 72 120 Q 100 112 128 120', L, 7) + k.LN('M 70 142 Q 100 134 130 142', L, 7) + k.LN('M 76 162 Q 100 155 124 162', L, 6); break;   /* 굵은 줄무늬 */
-    case 'analysis':    [[84,118],[112,126],[92,146],[118,150],[100,166],[80,164]].forEach(function(p){ s += k.CI(p[0],p[1],5,L,0); }); break;        /* 잔점 */
-    case 'concept':     s += k.P('M 88 118 L 100 110 L 112 118 L 112 132 L 100 140 L 88 132 Z', L, 0) + k.P('M 88 150 L 100 142 L 112 150 L 112 164 L 100 172 L 88 164 Z', L, 0, ' opacity=".8"'); break;   /* 육각 반점 */
-    case 'communicate': s += k.LN('M 70 128 Q 85 118 100 128 T 130 128', L, 5) + k.LN('M 70 152 Q 85 142 100 152 T 130 152', L, 5); break;   /* 물결 */
-    case 'collaborate': s += k.CI(88,128,11,L,0) + k.CI(114,150,13,L,0) + k.CI(92,164,7,L,0,' opacity=".8"'); break;   /* 큰 동그라미 */
-    default:            [[80,124],[100,118],[120,124],[84,146],[104,142],[122,148],[92,166],[112,166]].forEach(function(p){ s += k.CI(p[0],p[1],4.5,D,0,' opacity=".35"'); }); break;   /* 오돌토돌 */
-  }
-  return s;
-}
-function dinoBody(k, st){
-  var C=k.C, D=k.D, L=k.L, ID=k.ID, s='', big = st>=4, full = st>=5;
-  if(ID==='inquiry'){            /* 티라노 — 큰 머리, 작은 팔, 굵은 꼬리 */
-    s += k.limb('M 72 150 Q 34 146 18 118', 13);
-    s += k.E(90,140,34,27,C,3);
-    s += k.E(94,150,18,13,L,0);
-    s += k.limb('M 78 160 L 72 176', 10) + k.limb('M 100 162 L 104 176', 10);
-    s += k.E(70,177,10,4,D,0) + k.E(104,177,10,4,D,0);
-    s += k.limb('M 112 132 L 122 140', 5);
-    s += k.E(128,110,26,21,C,3);
-    s += k.P('M 108 118 L 152 118 L 148 130 Q 128 136 108 128 Z', L, 2.2);
-    if(big) s += k.P('M 116 118 L 120 126 L 124 118 L 128 126 L 132 118 L 136 126 L 140 118', '#fff', 0);
-    s += k.eye(134,104,6.5) + k.CI(150,112,2,D,0);
-    if(full) s += k.P('M 112 92 L 120 84 L 126 92', D, 0) + k.P('M 100 100 L 108 90 L 114 100', D, 0);
-  } else if(ID==='analysis'){    /* 랩터 — 날렵한 몸, 긴 꼬리, 낫 발톱, 깃털 볏 */
-    s += k.limb('M 66 140 Q 26 134 12 100', 8);
-    s += k.E(92,142,30,18,C,3);
-    s += k.E(96,150,16,8,L,0);
-    s += k.limb('M 84 156 L 78 176', 7) + k.limb('M 104 156 L 108 176', 7);
-    s += k.P('M 74 176 L 66 170 L 72 164 Z', D, 0) + k.P('M 112 176 L 120 170 L 114 164 Z', D, 0);
-    s += k.limb('M 96 134 Q 116 118 126 112', 9);
-    s += k.E(130,108,16,11,C,3);
-    s += k.P('M 138 106 L 160 112 L 138 116 Z', L, 2);
-    s += k.eye(130,105,4.6);
-    if(big) s += k.P('M 118 100 Q 122 86 130 92 Q 132 82 138 90 Q 142 80 146 92 Z', L, 2);
-    if(full) s += k.LN('M 104 130 L 112 126', D, 2) + k.LN('M 100 126 L 108 122', D, 2);
-  } else if(ID==='concept'){     /* 트리케라톱스 — 목도리 판, 뿔 셋 */
-    s += k.limb('M 62 150 Q 34 150 26 136', 9);
-    s += k.E(92,146,42,26,C,3);
-    s += k.E(96,156,22,10,L,0);
-    s += k.limb('M 70 164 L 66 176', 9) + k.limb('M 86 166 L 84 176', 9) + k.limb('M 106 166 L 108 176', 9) + k.limb('M 122 164 L 126 176', 9);
-    s += k.E(130,112,25,27,D,0);
-    s += k.E(130,112,20,22,C,0) + k.E(130,112,12,14,L,0,' opacity=".55"');
-    s += k.E(138,128,20,15,C,3);
-    s += k.P('M 150 128 L 160 132 L 148 138 Z', L, 2);
-    s += k.eye(136,124,4.6);
-    s += k.P('M 128 108 L 120 '+(big?70:82)+' L 136 106 Z', L, 2.2);
-    s += k.P('M 142 108 L 154 '+(big?74:86)+' L 150 112 Z', L, 2.2);
-    s += k.P('M 148 122 L 158 '+(full?110:116)+' L 154 126 Z', L, 1.8);
-    if(full) s += k.LN('M 108 96 L 112 92', D, 2) + k.LN('M 148 92 L 152 96', D, 2);
-  } else if(ID==='communicate'){ /* 프테라노돈 — 펼친 날개, 뒤로 뻗은 볏 */
-    s += k.P('M 100 126 L 26 92 L 40 118 L 64 146 Z', C, 3);
-    s += k.P('M 100 126 L 174 92 L 160 118 L 136 146 Z', C, 3);
-    s += k.LN('M 100 126 L 26 92', D, 2.5) + k.LN('M 100 126 L 174 92', D, 2.5);
-    s += k.E(100,136,14,22,C,3) + k.E(100,144,8,12,L,0);
-    s += k.limb('M 94 156 L 90 172', 4) + k.limb('M 106 156 L 110 172', 4);
-    s += k.E(100,108,13,10,C,3);
-    s += k.P('M 108 108 L 136 114 L 108 116 Z', L, 2);
-    s += k.P('M 94 104 L '+(big?60:72)+' '+(big?90:96)+' L 96 112 Z', D, 0);
-    s += k.eye(102,105,3.8);
-    if(full) s += k.star(40,80,5,L) + k.star(160,80,5,L);
-  } else if(ID==='collaborate'){ /* 브라키오 — 긴 목, 기둥 다리 */
-    s += k.limb('M 62 152 Q 30 156 20 140', 10);
-    s += k.E(94,150,38,24,C,3);
-    s += k.E(98,158,20,10,L,0);
-    s += k.R(70,160,12,17,4,C,3) + k.R(90,164,12,13,4,C,3) + k.R(106,164,12,13,4,C,3) + k.R(122,160,12,17,4,C,3);
-    s += k.limb('M 120 136 Q 138 100 140 '+(big?54:70), 15);
-    s += k.E(142,(big?52:68),12,9,C,3);
-    s += k.eye(145,(big?50:66),3.6);
-    if(full) s += k.E(126,100,5,9,L,0,' opacity=".7"') + k.E(132,84,5,9,L,0,' opacity=".7"') + k.E(136,68,5,9,L,0,' opacity=".7"');
-  } else {                       /* 안킬로 — 낮고 넓은 몸, 등 갑옷, 곤봉 꼬리 */
-    s += k.limb('M 54 156 Q 34 156 26 150', 9);
-    s += k.CI(22,150,(big?11:8),C,3);
-    s += k.E(98,150,46,22,C,3);
-    s += k.E(102,160,26,8,L,0);
-    s += k.limb('M 70 166 L 68 176', 8) + k.limb('M 90 170 L 90 176', 8) + k.limb('M 110 170 L 110 176', 8) + k.limb('M 128 166 L 130 176', 8);
-    [[64,136],[82,132],[100,130],[118,132],[134,138],[74,146],[92,144],[110,144],[126,148]].forEach(function(p,i){ if(i<5 || big) s += k.E(p[0],p[1],7,5,L,2); });
-    s += k.E(144,150,16,12,C,3);
-    s += k.P('M 156 148 L 166 152 L 156 156 Z', L, 2);
-    s += k.eye(146,146,3.8);
-    if(full) s += k.P('M 22 142 L 18 136 L 26 138 Z', D, 0) + k.P('M 30 146 L 34 140 L 36 148 Z', D, 0);
-  }
-  return s;
-}
+/* 공룡알 — 개별 생성 이미지 27장. 공통 3장 + 6갈래 × 4단계.
+   3: 갑옷 없음 / 4: 가죽 보호구 / 5: 금속 갑옷 / 6: 전설 갑옷.
+   원본 PNG는 따로 보관하고, 웹에서는 가벼운 WebP 파일을 읽는다. */
+var DINO_IMAGE_IDS = ['inquiry','analysis','concept','communicate','collaborate','responsible'];
+var DINO_IMAGE_NAMES = ['티라노','랩터','트리케라톱스','프테라노돈','브라키오','안킬로'];
+var DINO_IMAGE_STAGES = ['알','금 간 알','부화','새끼','청소년','성체','전설의 공룡'];
+var DINO_IMAGE_GEAR = ['','','','갑옷 없는 모습','가죽 보호구','금속 갑옷','전설 갑옷'];
+var DINO_IMAGE_SCALE = [0.92,0.92,0.92,0.68,0.80,0.91,1];
 function drawDino(st, b){
-  var k = pkTools(b), C=k.C, D=k.D, L=k.L, s='';
-  st = st|0; if(st<0) st=0; if(st>6) st=6;
-  if(st===6) s += k.aura();
-  if(st===0){
-    s += k.ground(34) + k.E(100,138,36,44,C,3.4) + dinoEggPattern(k) + k.E(86,118,8,12,'#fff',0,' opacity=".28"');
-  } else if(st===1){
-    s += k.ground(34) + k.E(100,138,36,44,C,3.4) + dinoEggPattern(k) + k.E(86,118,8,12,'#fff',0,' opacity=".28"');
-    s += k.LN('M 92 96 L 100 112 L 92 126 L 104 138 L 96 150', D, 3) + k.LN('M 114 108 L 108 122 L 118 132', D, 2.6);
-    s += k.star(124,104,6,L) + k.star(74,124,5,L);
-  } else if(st===2){
-    s += k.ground(34);
-    s += k.P('M 64 138 Q 64 182 100 182 Q 136 182 136 138 L 128 146 L 120 134 L 112 146 L 100 132 L 88 146 L 80 134 L 72 146 Z', C, 3.4);
-    s += k.E(100,118,24,22,C,3) + k.E(100,126,12,8,L,0) + k.eye(92,114,5.5) + k.eye(108,114,5.5);
-    s += k.LN('M 94 128 Q 100 134 106 128', D, 2.4);
-    s += k.P('M 104 82 L 130 74 L 126 96 L 116 90 Z', C, 3) + k.star(78,92,6,L) + k.star(132,104,5,L);
-  } else {
-    s += k.ground(k.ID==='communicate' ? 24 : 44);
-    s += k.G(dinoBody(k, st), 100, 176, DINO_SCALE[st]);
-    if(st===6) s += k.star(52,60,8) + k.star(150,54,7) + k.star(160,150,6);
-  }
-  return wrapSvg(s);
+  st=st|0; if(st<0) st=0; if(st>6) st=6;
+  var i=DINO_IMAGE_IDS.indexOf(b && b.id), file, alt;
+  if(i<0) i=0;
+  file='s'+st+(st<3?'':'-'+DINO_IMAGE_IDS[i]);
+  alt=st<3 ? '공룡 '+DINO_IMAGE_STAGES[st] :
+    DINO_IMAGE_NAMES[i]+' · '+DINO_IMAGE_STAGES[st]+' · '+DINO_IMAGE_GEAR[st];
+  return '<img class="charimg" src="images/dino-armor-v1/'+file+'.webp"'+
+    ' alt="'+alt+'" width="640" height="640" loading="lazy" decoding="async"'+
+    ' style="aspect-ratio:1/1;object-fit:contain;transform:scale('+DINO_IMAGE_SCALE[st]+');transform-origin:50% 90%">';
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -2055,3 +1959,28 @@ registerPack({ id:'passport', emoji:'🛂', name:'세계 여행 여권', subject
   words:{branchBtn:'🧳 여행 스타일 고르기', branchTitle:'어떤 여행자가 될까요?'},
   base:{title:'🌏 우리 반 세계 일주', levels:['🛫 출국장','🗺️ 한 대륙','🌍 세 대륙','🏆 세계 일주']},
   draw:drawPassport });
+
+/* 개별 생성 이미지: 공통 3장 + 갈래별 성장 24장. 원본은 outputs/all-pack-images에 보관. */
+function worldPackImageDraw(p){
+  return function(st,b){
+    st=st|0; if(st<0)st=0; if(st>6)st=6;
+    var ids=["inquiry","analysis","concept","communicate","collaborate","responsible"], i=ids.indexOf(b && b.id);
+    if(i<0)i=0;
+    var file="s"+st+(st<3?"":"-"+ids[i]);
+    var alt=(st<3?p.name:p.species[ids[i]])+" · "+p.stages[st];
+    var scales=[0.60,0.65,0.70,0.76,0.84,0.92,1];
+    return '<img class="charimg" src="images/world-packs-v1/'+p.id+'/'+file+'.webp" alt="'+alt.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")+'" width="640" height="640" loading="lazy" decoding="async" style="aspect-ratio:1/1;object-fit:contain;transform:scale('+scales[st]+');transform-origin:50% 90%">';
+  };
+}
+packById("scientist").draw=worldPackImageDraw(packById("scientist"));
+packById("lab").draw=worldPackImageDraw(packById("lab"));
+packById("robot").draw=worldPackImageDraw(packById("robot"));
+packById("village").draw=worldPackImageDraw(packById("village"));
+packById("garden").draw=worldPackImageDraw(packById("garden"));
+packById("passport").draw=worldPackImageDraw(packById("passport"));
+(function(){var p={"id":"ocean","name":"수족관","emoji":"🐠","tagline":"작은 알에서 풍성한 바다로","subject":"공통","stages":["알","치어","어린 개체","성체","무리","산호초","바다의 전설"],"species":{"inquiry":"해마","analysis":"문어","concept":"바다거북","communicate":"돌고래","collaborate":"상어","responsible":"흰동가리"},"words":{"branchBtn":"캐릭터 고르기","branchTitle":"어떤 모습으로 자랄까요?"},"base":{"title":"🐠 우리 반 어항","levels":["빈 어항","수초","산호초","바다"]}};p.draw=worldPackImageDraw(p);registerPack(p);}());
+(function(){var p={"id":"space","name":"우주 탐사","emoji":"🚀","tagline":"작은 비행기에서 화성 기지까지","subject":"공통","stages":["종이비행기","물로켓","모형로켓","인공위성","탐사선","달 기지","화성 기지"],"species":{"inquiry":"지구관측선","analysis":"달 탐사선","concept":"화성 로버","communicate":"소행성 탐사선","collaborate":"목성 탐사선","responsible":"심우주선"},"words":{"branchBtn":"캐릭터 고르기","branchTitle":"어떤 모습으로 자랄까요?"},"base":{"title":"🚀 우리 반 발사대","levels":["발사대","궤도","달","화성"]}};p.draw=worldPackImageDraw(p);registerPack(p);}());
+(function(){var p={"id":"bakery","name":"빵집","emoji":"🍞","tagline":"반죽이 자라 나만의 빵집으로","subject":"공통","stages":["밀가루","반죽","발효","굽기","빵","진열","빵집 개업"],"species":{"inquiry":"식빵","analysis":"크루아상","concept":"바게트","communicate":"도넛","collaborate":"케이크","responsible":"프레첼"},"words":{"branchBtn":"캐릭터 고르기","branchTitle":"어떤 모습으로 자랄까요?"},"base":{"title":"🍞 우리 반 빵집","levels":["반죽통","오븐","진열대","빵집"]}};p.draw=worldPackImageDraw(p);registerPack(p);}());
+(function(){var p={"id":"orchestra","name":"오케스트라","emoji":"🎼","tagline":"첫 소리가 멋진 공연으로","subject":"공통","stages":["소리","음","리듬","선율","화음","합주","공연"],"species":{"inquiry":"바이올린","analysis":"플루트","concept":"트럼펫","communicate":"북","collaborate":"피아노","responsible":"성악"},"words":{"branchBtn":"캐릭터 고르기","branchTitle":"어떤 모습으로 자랄까요?"},"base":{"title":"🎼 우리 반 무대","levels":["연습실","소극장","공연장","콘서트홀"]}};p.draw=worldPackImageDraw(p);registerPack(p);}());
+(function(){var p={"id":"puzzle","name":"명화 퍼즐","emoji":"🧩","tagline":"조각을 모아 한 폭의 그림으로","subject":"공통","stages":["조각 0","조각 3","조각 6","조각 9","조각 12","조각 16","조각 20 · 완성"],"species":{"inquiry":"별이 빛나는 밤","analysis":"해바라기","concept":"진주 귀걸이","communicate":"모나리자","collaborate":"파도","responsible":"절규"},"words":{"branchBtn":"캐릭터 고르기","branchTitle":"어떤 모습으로 자랄까요?"},"base":{"title":"🧩 우리 반 미술관","levels":["벽","액자","전시실","미술관"]}};p.draw=worldPackImageDraw(p);registerPack(p);}());
+(function(){var p={"id":"crystal","name":"결정 키우기","emoji":"🧊","tagline":"작은 결정이 빛나는 표본으로","subject":"과학","stages":["용액","핵","작은 결정","결정","결정 무리","표본 전시","표본"],"species":{"inquiry":"소금","analysis":"명반","concept":"눈결정","communicate":"수정","collaborate":"황철석","responsible":"자수정"},"words":{"branchBtn":"캐릭터 고르기","branchTitle":"어떤 모습으로 자랄까요?"},"base":{"title":"🧊 우리 반 표본실","levels":["비커","선반","진열장","광물 박물관"]}};p.draw=worldPackImageDraw(p);registerPack(p);}());

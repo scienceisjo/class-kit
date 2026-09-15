@@ -21,7 +21,7 @@
 """
 import pathlib, re, shutil, subprocess, sys, json
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]          # …/질문나무/질문나무 (Desktop)
+ROOT = pathlib.Path(__file__).resolve().parents[2]          # …/dev/apps (Desktop)
 KIT  = ROOT / "class-kit"
 
 OUR_URL    = "https://hmzklbrksfdhzsgwzfyg.supabase.co"
@@ -115,18 +115,21 @@ process.exit(bad?1:0);
     if r.returncode != 0: raise SystemExit("❌ 문법 오류")
 
 def clear_dir(d):
-    """OneDrive 가 폴더를 잠그는 일이 있어 폴더는 두고 안의 파일만 비운다"""
+    """OneDrive 가 폴더를 잠그는 일이 있어 폴더는 두고 안의 파일만 비운다 (하위 폴더까지)"""
     d = pathlib.Path(d); d.mkdir(parents=True, exist_ok=True)
-    for p in d.iterdir():
+    for p in d.rglob("*"):
         if p.is_file(): p.unlink()
 
 def copy_tree(src, dst, exts=None):
+    """하위 폴더째 복사 — 세계관 팩 그림은 images/world-packs-v1/<팩>/ 처럼 두 단계 아래에 있다"""
     src, dst = pathlib.Path(src), pathlib.Path(dst)
     clear_dir(dst)
     n = 0
-    for p in src.iterdir():
+    for p in src.rglob("*"):
         if p.is_file() and (exts is None or p.suffix.lower() in exts):
-            shutil.copy2(p, dst / p.name); n += 1
+            out = dst / p.relative_to(src)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(p, out); n += 1
     return n
 
 def main():
