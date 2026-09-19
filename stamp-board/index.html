@@ -2635,7 +2635,7 @@ async function doneCoupon(id){
 /* 내보내기 */
 function renderExport(){
   var h = '<div class="card"><h3>📤 생기부용 내보내기</h3>';
-  h += '<div class="sub">학생별 <b>날짜 · 역량 · 행동</b> 기록을 내려받아 세특 작성에 씁니다</div>';
+  h += '<div class="sub">학생별 <b>학번 · 이름 · 날짜 · 역량 · 관찰된 행동 · 수업(차시) · 출처</b>를 내려받아 세특 작성에 씁니다 — 화면 목록과 달리 <b>기록 전부</b>를 받아요</div>';
   h += '<div style="background:rgba(217,83,79,.09);border-radius:10px;padding:10px;font-size:var(--fs-xxs);font-weight:800;color:var(--bad);margin:12px 0">⚠️ 학생 개인정보가 담긴 파일입니다. 다운로드 후 관리에 주의해주세요.</div>';
   h += '<label class="fl">반 (비우면 전체)</label><input class="inp" id="exC" type="number" inputmode="numeric" placeholder="예: 3">';
   h += '<button class="btn" style="margin-top:12px" onclick="doExport()">⬇️ CSV 내려받기</button>';
@@ -2643,37 +2643,97 @@ function renderExport(){
   h += '<div class="sub" style="margin-top:12px">현재 내 기록: <b>' + S.teaObs.length + '건</b></div></div>';
   $('p-out').innerHTML = h;
 }
-function exRows(){
+/* 내보내기용 — 화면 목록(S.teaObs)은 최근 600건까지만 들고 있으므로, 내보낼 때는 서버에서 전부 다시 받는다.
+   학생 이름은 profiles 를 같이 붙여 받는다(교사 계정은 명단을 읽을 수 있다). */
+async function fetchAllObs(){
+  var all = [], from = 0, page = 1000;
+  while(true){
+    var r = await sb.from('observations').select('*, profiles!observations_student_id_fkey(name,grade,class_no,number)')
+              .eq('given_by', S.user.id).is('voided_at', null)
+              .order('observed_on',{ascending:false}).order('id',{ascending:false}).range(from, from+page-1);
+    if(r.error){
+      /* 관계 이름이 다르거나 명단 읽기가 막혀 있으면 이름 없이라도 받는다 */
+      var r2 = await sb.from('observations').select('*').eq('given_by', S.user.id).is('voided_at', null)
+                 .order('observed_on',{ascending:false}).order('id',{ascending:false}).range(from, from+page-1);
+      if(r2.error) throw new Error(r2.error.message || '기록을 받지 못했어요');
+      r = r2;
+    }
+    all = all.concat(r.data || []);
+    if((r.data || []).length < page) break;
+    from += page;
+  }
+  return all;
+}
+function exFilter(rows){
   var c = ($('exC') && $('exC').value.trim()) || '';
-  return S.teaObs.filter(function(o){ return !c || String(o.class_no_snap)===c; });
+  return rows.filter(function(o){ return !c || String(o.class_no_snap)===c; });
 }
-function doExport(){
-  var rows = exRows();
-  if(!rows.length){ toast('내보낼 기록이 없어요'); return; }
-  var head = '학년도,학기,반,번호,날짜,역량,관찰된 행동,수업\n';
-  var body = rows.map(function(o){
-    var q = function(v){ return '"' + String(v==null?'':v).replace(/"/g,'""') + '"'; };
-    return [o.school_year,o.semester,o.class_no_snap||'',o.number_snap||'',o.observed_on,
-            catName(o.category),o.behavior,o.lesson_note||''].map(q).join(',');
-  }).join('\n');
-  var blob = new Blob(['﻿'+head+body], {type:'text/csv;charset=utf-8;'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = '칭찬도장_관찰기록_' + todayStr() + '.csv';
-  a.click(); URL.revokeObjectURL(a.href);
-  toast('내려받았어요 (' + rows.length + '건)');
+/* 학번 = 학년 + 반 2자리 + 번호 2자리 (관찰 당시 반·번호를 우선, 없으면 명단) */
+function exSid(o){
+  var p = o.profiles || {};
+  var g = p.grade || '', c = o.class_no_snap || p.class_no || '', n = o.number_snap || p.number || '';
+  if(!g && !c) return '';
+  var z = function(v){ v = String(v||''); return v.length===1 ? '0'+v : v; };
+  return String(g) + z(c) + z(n);
 }
-function doCopyAll(){
-  var rows = exRows();
+/* 도장의 출처 — 질문과수원 ⭐ 연계인지, 골든벨인지, 도장판에서 직접 찍었는지 */
+function exSource(o){
+  var n = String(o.lesson_note || '');
+  if(n.indexOf('질문과수원') === 0) return '질문과수원 ⭐';
+  if(/골든벨/.test(n)) return '골든벨';
+  return '도장판';
+}
+/* 수업(차시) 칸 — 질문과수원 태그 「질문과수원 ⭐ 2-7-2-2 옴의 법칙 (Q#12)」는 가운데 차시만, 도장판 기록은 그대로 */
+function exLesson(o){
+  var n = String(o.lesson_note || '');
+  if(n.indexOf('질문과수원') === 0) return n.replace(/^질문과수원\s*⭐\s*/, '').replace(/\s*\(Q#\d+\)\s*$/, '').trim();
+  return n;
+}
+function exSort(rows){
+  return rows.slice().sort(function(a,b){
+    var ac = +(a.class_no_snap||0) - +(b.class_no_snap||0); if(ac) return ac;
+    var an = +(a.number_snap||0) - +(b.number_snap||0); if(an) return an;
+    return String(a.observed_on).localeCompare(String(b.observed_on));
+  });
+}
+async function doExport(){
+  showLoad();
+  try{
+    var rows = exSort(exFilter(await fetchAllObs()));
+    if(!rows.length){ toast('내보낼 기록이 없어요'); return; }
+    var head = '학년도,학기,반,번호,학번,이름,날짜,역량,관찰된 행동,수업(차시),출처\n';
+    var body = rows.map(function(o){
+      var q = function(v){ return '"' + String(v==null?'':v).replace(/"/g,'""') + '"'; };
+      var nm = (o.profiles && o.profiles.name) || '';
+      return [o.school_year,o.semester,o.class_no_snap||'',o.number_snap||'',exSid(o),nm,o.observed_on,
+              catName(o.category),o.behavior,exLesson(o),exSource(o)].map(q).join(',');
+    }).join('\n');
+    var blob = new Blob(['﻿'+head+body], {type:'text/csv;charset=utf-8;'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '칭찬도장_관찰기록_' + todayStr() + '.csv';
+    a.click(); URL.revokeObjectURL(a.href);
+    toast('내려받았어요 (' + rows.length + '건)');
+  }catch(e){ toast('내보내기에 실패했어요 — ' + (e.message||e)); console.error(e); }
+  finally{ hideLoad(); }
+}
+async function doCopyAll(){
+  var rows;
+  showLoad();
+  try{ rows = exSort(exFilter(await fetchAllObs())); }
+  catch(e){ toast('기록을 받지 못했어요 — ' + (e.message||e)); return; }
+  finally{ hideLoad(); }
   if(!rows.length){ toast('복사할 기록이 없어요'); return; }
   var by={}, i;
   for(i=0;i<rows.length;i++){
-    var k = (rows[i].class_no_snap||'?') + '-' + (rows[i].number_snap||'?');
+    var nm = (rows[i].profiles && rows[i].profiles.name) || '';
+    var k = (rows[i].class_no_snap||'?') + '-' + (rows[i].number_snap||'?') + (nm ? ' ' + nm : '');
     (by[k]=by[k]||[]).push(rows[i]);
   }
   var out = Object.keys(by).sort().map(function(k){
     return '[' + k + ']\n' + by[k].map(function(o){
-      return '  ' + o.observed_on + ' (' + catName(o.category) + ') ' + o.behavior;
+      var ls = exLesson(o);
+      return '  ' + o.observed_on + ' (' + catName(o.category) + ') ' + o.behavior + (ls ? ' — ' + ls : '') + (exSource(o)!=='도장판' ? ' [' + exSource(o) + ']' : '');
     }).join('\n');
   }).join('\n\n');
   navigator.clipboard.writeText(out).then(function(){ toast('복사했어요 (' + rows.length + '건)'); },
