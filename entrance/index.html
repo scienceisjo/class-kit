@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>과학 시간</title>
+<meta name="theme-color" content="#0b1d22">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link rel="stylesheet" href="forest.css">
+<style>
+:root{
+ --paper:#fdf7ea; --paper-hi:#fffdf6; --paper-lo:#f4ead4; --line:#e2d2ae; --line-soft:#efe4ca;
+ --ink:#2f2a20; --ink-dim:#5d5342; --ink-mute:#6b604f; --leaf:#2f7d55; --leaf-lo:#4a9e70; --warn:#b3423a;
+ --jua:"Jua","Malgun Gothic",sans-serif; --body:"Gowun Dodum","Pretendard Variable",Pretendard,"Malgun Gothic",sans-serif;
+ --r:18px; --shadow:0 14px 34px -20px rgba(72,56,24,.5); --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{background:var(--paper)}
+body{font-family:var(--body);color:var(--ink);line-height:1.65;word-break:keep-all;overflow-wrap:anywhere;-webkit-font-smoothing:antialiased;
+ background:radial-gradient(760px 460px at 6% 100%, rgba(47,125,85,.1), transparent 58%),var(--paper)}
+:focus-visible{outline:3px solid #2b6cb0;outline-offset:2px;border-radius:8px}
+
+/* 숲 */
+.fz-hero{position:relative;height:clamp(460px,72vh,680px);overflow:hidden;background:#0b1d22;color:#f6ead2}
+.fz-hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.fz-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;pointer-events:none;background:linear-gradient(rgba(253,247,234,0),var(--paper))}
+.fz-title{position:absolute;left:0;right:0;top:clamp(16px,4.2vh,44px);text-align:center;padding:0 16px;pointer-events:none}
+.fz-title .kick{font:600 11.5px/1 "Pretendard Variable",Pretendard,sans-serif;letter-spacing:.3em;color:#f2c97a}
+.fz-title h1{margin-top:12px;font:700 clamp(24px,3.9vw,46px)/1.22 "Gowun Batang",serif;letter-spacing:-.02em;color:#fff4dc;text-shadow:0 6px 34px rgba(0,0,0,.5)}
+.fz-title .sub{margin-top:8px;font-size:13.5px;color:#d9c7a3}
+
+.wrap{max-width:720px;margin:0 auto;padding:0 16px calc(30px + var(--safe-b))}
+.demo{margin:14px 0 0;padding:11px 14px;border-radius:14px;background:#fff6dc;border:1.5px dashed #e0b85a;font-size:13.5px;color:var(--ink-dim);text-align:center}
+.demo a{color:var(--leaf);font-weight:700}
+.rooms{display:grid;gap:12px;margin-top:10px}
+@media(min-width:620px){.rooms{grid-template-columns:1fr 1fr}}
+.room{display:flex;align-items:center;gap:14px;text-align:left;width:100%;min-height:76px;cursor:pointer;
+ background:linear-gradient(180deg,var(--paper-hi),var(--paper));border:2px solid var(--line);border-radius:var(--r);padding:16px 15px;
+ box-shadow:var(--shadow);transition:.16s;font:inherit;color:var(--ink);text-decoration:none}
+.room:hover{transform:translateY(-2px);border-color:var(--leaf-lo)}
+.room .ic{flex:none;width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:var(--paper-lo);border:1.5px solid var(--line-soft)}
+.room .tx{flex:1;min-width:0}
+.room .tt{display:block;font-family:var(--jua);font-size:17.5px;line-height:1.3}
+.room .dd{display:block;font-size:13px;color:var(--ink-mute);margin-top:3px}
+.room .arw{flex:none;color:var(--ink-mute);font-size:19px}
+.room.soon{opacity:.55;cursor:default}.room.soon:hover{transform:none;border-color:var(--line)}
+
+.view{display:none;animation:fade .22s ease both}.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.vhead{display:flex;align-items:center;gap:10px;margin:22px 0 6px;flex-wrap:wrap}
+.vhead h2{font-family:var(--jua);font-weight:400;font-size:21px}
+.back{font-family:var(--jua);font-size:15px;min-height:44px;padding:8px 16px;border-radius:999px;cursor:pointer;border:2px solid var(--line);background:var(--paper-hi);color:var(--ink-dim)}
+.vsub{font-size:13.5px;color:var(--ink-mute);margin-bottom:12px}
+.items{display:grid;gap:10px}
+.item{display:flex;align-items:center;gap:12px;padding:14px 15px;min-height:56px;border-radius:15px;border:2px solid var(--line);background:var(--paper-hi);text-decoration:none;color:var(--ink);font-size:15.5px}
+a.item:hover{border-color:var(--leaf-lo)}
+.item .n{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--paper-lo);font-family:var(--jua);font-size:14px;color:var(--ink-dim)}
+.item .note{display:block;font-size:12.8px;color:var(--ink-mute)}
+.item.off{opacity:.55}
+.dday{flex:none;min-width:58px;text-align:center;font-family:var(--jua);font-size:15px;padding:6px 8px;border-radius:11px;background:rgba(47,125,85,.1);color:var(--leaf)}
+.dday.near{background:rgba(179,66,58,.12);color:var(--warn)}.dday.past{background:var(--paper-lo);color:var(--ink-mute)}
+.empty{padding:22px;text-align:center;color:var(--ink-mute);border:2px dashed var(--line);border-radius:15px;font-size:14px}
+body:not(:has(#v-home.on)) .fz-hero{height:clamp(200px,28vh,260px)}
+body:not(:has(#v-home.on)) .fz-lays,body:not(:has(#v-home.on)) .fz-title .sub{display:none}
+footer{margin-top:34px;text-align:center;font-size:12px;color:var(--ink-mute);line-height:1.8}
+footer a{color:var(--ink-mute)}
+</style>
+</head>
+<body>
+<section class="fz-hero" id="fzHero">
+  <canvas id="fzCv" aria-hidden="true"></canvas>
+  <div class="fz-lays" id="fzLays"></div>
+  <div class="fz-title"><div class="kick" id="kick"></div><h1 id="ttl"></h1><p class="sub" id="sub"></p></div>
+</section>
+<div class="wrap">
+  <p class="demo" id="demo" hidden>지금은 <b>예시 화면</b>입니다. 선생님이시면 <a href="make.html">✏️ 우리 반 입구 만들기</a>에서 제목과 방을 고쳐 학생용 링크를 받으세요.</p>
+  <section class="view on" id="v-home"><div class="rooms" id="rooms"></div></section>
+  <section class="view" id="v-room">
+    <div class="vhead"><button class="back" type="button" id="back">← 처음으로</button><h2 id="vT"></h2></div>
+    <p class="vsub" id="vS"></p>
+    <div class="items" id="vItems"></div>
+  </section>
+  <footer id="app-credit">과학 시간 입구 · 우리 반 도구 꾸러미(class-kit)<br><a href="#" id="editLink">✏️ 선생님: 이 입구 고치기</a></footer>
+</div>
+<script src="cfg.js"></script>
+<script src="forest.js"></script>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const HUES = [[160,34],[146,38],[138,44],[96,36],[170,30],[120,30],[150,32],[110,34]];
+let CFG, forest = null;
+
+function isReady(r){ return r.type === 'link' ? !!EntranceCfg.safeUrl(r.url) : true; }
+function roomHref(r){ return r.type === 'link' ? EntranceCfg.safeUrl(r.url) : null; }
+
+function renderHome(){
+  document.title = (CFG.t2 || CFG.t1 || '과학 시간').replace(/\s+/g, ' ');
+  $('#kick').textContent = CFG.kick || '';
+  $('#ttl').innerHTML = esc(CFG.t1) + (CFG.t1 && CFG.t2 ? '<br>' : '') + esc(CFG.t2);
+  $('#sub').textContent = CFG.sub || '';
+  const on = CFG.rooms.filter(r => r.on);
+  $('#rooms').innerHTML = on.map(r => {
+    const href = roomHref(r), ready = isReady(r);
+    const inner = '<span class="ic" aria-hidden="true">' + esc(r.ic) + '</span><span class="tx"><span class="tt">' + esc(r.name) + '</span><span class="dd">'
+      + esc(ready ? r.sub : '선생님이 아직 주소를 넣지 않았어요') + '</span></span><span class="arw" aria-hidden="true">' + (href ? '↗' : '›') + '</span>';
+    return href ? '<a class="room" href="' + esc(href) + '" target="_blank" rel="noopener">' + inner + '</a>'
+      : r.type === 'link' ? '<div class="room soon" aria-disabled="true">' + inner + '</div>'
+      : '<button class="room" type="button" data-room="' + esc(r.id) + '">' + inner + '</button>';
+  }).join('') || '<p class="empty">켜 둔 방이 없어요.</p>';
+  document.querySelectorAll('[data-room]').forEach(b => b.addEventListener('click', () => openRoom(b.dataset.room)));
+  drawForest(on);
+}
+
+/* 나무: 켠 방 순서대로, 가운데가 낮은 V자 — 제목 아래 공간을 비워 둔다 */
+function drawForest(on){
+  if(forest){ forest.destroy(); }
+  const n = Math.min(on.length, 8), list = on.slice(0, n);
+  const trees = list.map((r, i) => {
+    const f = n === 1 ? .5 : .09 + i * (.83 / (n - 1)), mid = Math.abs(f - .5) * 2;
+    return { id:r.id, f, s:.7 + mid * .34, name:r.name, sub:r.sub, hue:HUES[i % HUES.length],
+      url:roomHref(r) || undefined, go:r.type !== 'link' ? r.id : undefined };
+  });
+  const ids = trees.map(t => t.id), pick = k => ids.filter((_, i) => i % 3 === k);
+  const hubs = [{ id:'h1', f:.26, d:.1, links:pick(0).concat(pick(1)) }, { id:'h2', f:.7, d:.5, links:pick(1).concat(pick(2)) }, { id:'h3', f:.47, d:.9, links:pick(2).concat(pick(0)) }]
+    .filter(h => h.links.length);
+  $('#fzLays').innerHTML = '';
+  forest = Forest({ box:$('#fzHero'), canvas:$('#fzCv'), lays:$('#fzLays'), mode:'hero', trees, hubs,
+    onTree:t => { if(t.go) openRoom(t.go); } });
+}
+
+function dday(ds){
+  const d = new Date(ds + 'T00:00:00'), t = new Date(); t.setHours(0, 0, 0, 0);
+  if(isNaN(d)) return null; return Math.round((d - t) / 864e5);
+}
+function openRoom(id){
+  const r = CFG.rooms.find(x => x.id === id); if(!r) return;
+  $('#vT').textContent = r.ic + ' ' + r.name; $('#vS').textContent = r.sub || '';
+  const items = (r.items || []).filter(x => x && (x.t || x.u));
+  let h = '';
+  if(r.type === 'eval'){
+    const rows = items.slice().sort((a, b) => String(a.d || '9').localeCompare(String(b.d || '9')));
+    h = rows.map(x => { const k = x.d ? dday(x.d) : null;
+      const tag = k == null ? '<span class="dday past">날짜 미정</span>' : k < 0 ? '<span class="dday past">끝남</span>' : '<span class="dday' + (k <= 7 ? ' near' : '') + '">' + (k === 0 ? 'D-DAY' : 'D-' + k) + '</span>';
+      return '<div class="item">' + tag + '<span><b>' + esc(x.t) + '</b>' + (x.d ? ' <small>(' + esc(x.d.slice(5).replace('-', '/')) + ')</small>' : '')
+        + (x.what ? '<span class="note">범위 · ' + esc(x.what) + '</span>' : '') + (x.prep ? '<span class="note">준비물 · ' + esc(x.prep) + '</span>' : '') + '</span></div>'; }).join('');
+  } else {
+    h = items.map((x, i) => { const u = EntranceCfg.safeUrl(x.u);
+      const inner = '<span class="n">' + (i + 1) + '</span><span><b>' + esc(x.t || '제목 없음') + '</b>' + (x.note ? '<span class="note">' + esc(x.note) + '</span>' : (u ? '' : '<span class="note">준비 중</span>')) + '</span>';
+      return u ? '<a class="item" href="' + esc(u) + '" target="_blank" rel="noopener">' + inner + '</a>' : '<div class="item off">' + inner + '</div>'; }).join('');
+  }
+  $('#vItems').innerHTML = h || '<p class="empty">아직 올라온 것이 없어요.</p>';
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'v-room'));
+  history.replaceState(null, '', location.pathname + location.search + (location.hash.replace(/&?room=[^&]*/, '') || '#') + '&room=' + id);
+  scrollTo({ top:0, behavior:'smooth' });
+}
+function goHome(){
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'v-home'));
+  history.replaceState(null, '', location.pathname + location.search + location.hash.replace(/&?room=[^&]*/, ''));
+}
+$('#back').addEventListener('click', goHome);
+/* make.html 미리보기: 부모 창이 설정을 보내면 그대로 다시 그린다 */
+addEventListener('message', e => { const d = e.data; if(!d || d.type !== 'entrance-cfg') return;
+  CFG = EntranceCfg.fix(d.cfg); $('#demo').hidden = true; renderHome();
+  if(d.room) openRoom(d.room); else goHome(); });
+
+(async function start(){
+  let c = window.ENTRANCE_CONFIG || null, demo = false;
+  if(!c){ try { c = await EntranceCfg.unpack(location.hash); } catch(e){ alert(e.message); } }
+  if(!c){ demo = true; c = EntranceCfg.defaults();
+    c.t1 = '해누리와 선생님이'; c.sub = '예시 화면 — 제목·방은 선생님이 바꿀 수 있어요';
+    c.rooms[0].items = [{ t:'1차시 학습지', u:'', note:'주소를 넣으면 눌러서 열려요' }];
+    c.rooms[1].items = [{ t:'수행평가 ① 실험 보고서', d:new Date(Date.now() + 5 * 864e5).toISOString().slice(0, 10), what:'옴의 법칙', prep:'필기구·계산기' }]; }
+  CFG = EntranceCfg.fix(c);
+  $('#demo').hidden = !demo;
+  renderHome();
+  const rm = /[#&]room=([\w-]+)/.exec(location.hash); if(rm) openRoom(rm[1]);
+  const pk = window.ENTRANCE_CONFIG ? null : await EntranceCfg.pack(CFG);
+  $('#editLink').href = 'make.html' + (demo || !pk ? '' : '#' + pk);
+  if(window.ENTRANCE_CONFIG) $('#editLink').hidden = true;
+})();
+</script>
+</body>
+</html>

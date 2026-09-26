@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리 반 과학 시간 입구 만들기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<style>
+:root{--paper:#fdf7ea;--paper-hi:#fffdf6;--paper-lo:#f4ead4;--line:#e2d2ae;--line-soft:#efe4ca;--ink:#2f2a20;--ink-dim:#5d5342;--mute:#6b604f;--leaf:#2f7d55;--warn:#b3423a;--gold:#c9892b}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{font-family:"Pretendard Variable",Pretendard,"Malgun Gothic",sans-serif;color:var(--ink);background:var(--paper);word-break:keep-all;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:3px solid #2b6cb0;outline-offset:2px}
+.app{display:grid;grid-template-columns:minmax(360px,470px) 1fr;min-height:100vh}
+@media(max-width:980px){.app{grid-template-columns:1fr}.pv{position:relative!important;height:78vh!important;top:0!important}}
+.ed{padding:26px 22px 60px;border-right:1.5px solid var(--line);background:var(--paper-hi)}
+.ed h1{font-family:"Jua",sans-serif;font-weight:400;font-size:24px;color:var(--leaf)}
+.ed .lead{font-size:13.5px;color:var(--ink-dim);line-height:1.65;margin-top:6px}
+.sec{margin-top:24px}
+.sec h2{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--ink-dim);letter-spacing:.02em;padding-bottom:8px;border-bottom:1.5px dashed var(--line)}
+.sec h2 .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--leaf);color:#fff;font-size:12px}
+label.f{display:block;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--ink-dim)}
+label.f small{font-weight:400;color:var(--mute)}
+input[type=text],input[type=url],textarea{width:100%;margin-top:5px;font:15px/1.5 "Pretendard Variable",Pretendard,sans-serif;padding:10px 12px;border:1.5px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
+textarea{font-size:13.5px;resize:vertical;min-height:84px}
+input:focus,textarea:focus{outline:2px solid var(--leaf);outline-offset:0;border-color:var(--leaf)}
+.room{margin-top:12px;border:2px solid var(--line);border-radius:15px;background:#fff;overflow:hidden}
+.room.off{background:var(--paper-lo);opacity:.8}
+.rh{display:flex;align-items:center;gap:8px;padding:9px 10px}
+.rh .emo{width:46px;text-align:center;font-size:20px;padding:6px 4px;margin:0}
+.rh .nm{flex:1;margin:0;font-weight:700}
+.sw{position:relative;flex:none;width:46px;height:28px}
+.sw input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0}
+.sw span{position:absolute;inset:0;border-radius:99px;background:#d6ccb6;transition:.2s;pointer-events:none}
+.sw span::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s}
+.sw input:checked+span{background:var(--leaf)}.sw input:checked+span::after{left:21px}
+.sw input:focus-visible+span{outline:3px solid #2b6cb0;outline-offset:2px}
+.ib{flex:none;width:34px;height:34px;border-radius:9px;border:1.5px solid var(--line);background:var(--paper-hi);cursor:pointer;font-size:14px;color:var(--ink-dim)}
+.ib:hover{border-color:var(--leaf);color:var(--leaf)}.ib.del:hover{border-color:var(--warn);color:var(--warn)}
+.rb{padding:2px 12px 12px;border-top:1px solid var(--line-soft)}
+.hint{margin-top:6px;font-size:12px;color:var(--mute);line-height:1.55}
+.hint code{font-size:11.5px;background:var(--paper-lo);padding:1px 5px;border-radius:5px}
+.tag{flex:none;font-size:11px;padding:3px 8px;border-radius:99px;background:var(--paper-lo);color:var(--mute)}
+.warnline{margin-top:6px;font-size:12px;color:var(--warn)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{font:700 14px/1 "Pretendard Variable",Pretendard,sans-serif;min-height:44px;padding:0 16px;border-radius:12px;border:2px solid var(--line);background:var(--paper-hi);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--leaf)}
+.btn.go{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.btn.sm{min-height:36px;font-size:13px;padding:0 12px}
+.out{margin-top:10px;font-size:12.5px;color:var(--ink-dim);word-break:break-all;background:var(--paper-lo);border-radius:10px;padding:9px 11px;max-height:90px;overflow:auto}
+#qr{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:6px}
+#qr canvas,#qr img{background:#fff;padding:10px;border-radius:10px;border:1.5px solid var(--line)}
+.pv{position:sticky;top:0;height:100vh;background:#0b1d22}
+.pv iframe{width:100%;height:100%;border:0;display:block}
+.pvbar{position:absolute;left:12px;top:12px;z-index:2;display:flex;gap:6px}
+.pvbar button{font:600 12.5px/1 "Pretendard Variable",Pretendard,sans-serif;padding:8px 12px;border-radius:99px;border:0;background:rgba(255,253,246,.9);color:var(--ink);cursor:pointer}
+.pvbar button.on{background:var(--leaf);color:#fff}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,16px);background:var(--ink);color:#fffdf6;padding:12px 18px;border-radius:14px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:9}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+<main class="ed">
+  <h1>우리 반 과학 시간 입구 만들기</h1>
+  <p class="lead">학생이 처음 여는 한 장짜리 입구입니다. 위에는 숲이 자라고, 켜 둔 방마다 나무가 한 그루씩 생깁니다.
+  고친 내용은 <b>이 기기에 자동 저장</b>되고, 다 되면 아래에서 <b>학생용 링크</b>를 받으시면 됩니다. 서버나 가입은 필요 없습니다.</p>
+
+  <section class="sec">
+    <h2><span class="n">1</span>제목</h2>
+    <label class="f">윗줄 작은 글씨 <small>(영문 대문자가 잘 어울려요)</small><input type="text" id="kick" maxlength="40"></label>
+    <label class="f">제목 첫째 줄<input type="text" id="t1" maxlength="30"></label>
+    <label class="f">제목 둘째 줄<input type="text" id="t2" maxlength="30"></label>
+    <label class="f">아랫줄 <small>(학교·학년·과목)</small><input type="text" id="sub" maxlength="50"></label>
+  </section>
+
+  <section class="sec">
+    <h2><span class="n">2</span>방 고르기 <span class="tag" id="cnt"></span></h2>
+    <p class="hint">스위치를 켠 방만 학생에게 보입니다. ▲▼ 로 순서를 바꾸면 숲의 나무 순서도 바뀝니다. 나무는 여덟 그루까지 그려집니다.</p>
+    <div id="rooms"></div>
+    <div class="row"><button class="btn sm" type="button" id="addLink">＋ 링크 방</button><button class="btn sm" type="button" id="addList">＋ 목록 방</button><button class="btn sm" type="button" id="reset">처음 상태로</button></div>
+  </section>
+
+  <section class="sec">
+    <h2><span class="n">3</span>학생에게 나눠 주기</h2>
+    <p class="hint">링크 안에 설정이 통째로 들어 있어서, 고친 뒤에는 <b>링크를 새로 받아</b> 다시 나눠 주셔야 합니다. 링크가 길면 QR 대신 단축 주소를 쓰시거나 HTML 파일로 받아 학교 홈페이지 등에 올리셔도 됩니다.</p>
+    <div class="row"><button class="btn go" type="button" id="copy">📋 학생용 링크 복사</button><button class="btn" type="button" id="qrBtn">🔳 QR 보기</button><button class="btn" type="button" id="dl">⬇️ HTML 파일로 받기</button></div>
+    <div class="out" id="out" hidden></div>
+    <div id="qr" hidden></div>
+    <p class="hint">질문나무·칭찬 도장판은 <a href="../setup/guide.html" target="_blank" rel="noopener">우리 반 도구 꾸러미 설치 가이드</a>대로 선생님 학교 것을 설치한 뒤, 그 주소를 방에 넣으시면 됩니다.</p>
+  </section>
+</main>
+<aside class="pv">
+  <div class="pvbar" id="pvbar"><button type="button" class="on" data-w="">넓은 화면</button><button type="button" data-w="390">휴대폰</button></div>
+  <iframe id="pv" src="index.html#preview" title="학생 화면 미리보기"></iframe>
+</aside>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script src="cfg.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const DKEY = 'entrance_draft_v1';
+let C, openId = null;
+const toast = m => { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600); };
+const HINT = {
+  tree:'우리 반 도구 꾸러미로 설치한 <b>질문나무 학생 앱</b> 주소 (예: <code>https://아이디.github.io/class-kit/question-tree/</code>)',
+  stamp:'우리 반 도구 꾸러미로 설치한 <b>칭찬 도장판</b> 주소 (예: <code>https://아이디.github.io/class-kit/stamp-board/</code>)',
+  map:'초3~고3 과학 단원이 이어지는 지도입니다. 그대로 두셔도 됩니다.'
+};
+
+/* 목록 칸 ↔ 글자 */
+const listToText = (r) => (r.items || []).map(x => r.type === 'eval' ? [x.d || '', x.t || '', x.what || '', x.prep || ''].join(' | ') : [x.t || '', x.u || '', x.note || ''].join(' | ').replace(/( \| )+$/, '')).join('\n');
+function textToList(r, txt){
+  return txt.split(/\r?\n/).map(l => l.split('|').map(s => s.trim())).filter(a => a.some(Boolean)).map(a => r.type === 'eval'
+    ? { d:(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/.exec(a[0]) || []).slice(1).map((v, i) => i ? v.padStart(2, '0') : v).join('-'), t:a[1] || '', what:a[2] || '', prep:a[3] || '' }
+    : { t:a[0] || '', u:a[1] || '', note:a[2] || '' });
+}
+
+function roomHTML(r, i){
+  const body = r.type === 'link'
+    ? '<label class="f">주소<input type="url" data-k="url" value="' + esc(r.url) + '" placeholder="https://"></label>' + (HINT[r.id] ? '<p class="hint">' + HINT[r.id] + '</p>' : '')
+      + (r.on && !EntranceCfg.safeUrl(r.url) ? '<p class="warnline">주소가 비어 있어 학생 화면에서는 흐리게 보여요.</p>' : '')
+    : '<label class="f">' + (r.type === 'eval' ? '평가 목록 <small>한 줄에 하나 · 날짜 | 이름 | 범위 | 준비물</small>' : '목록 <small>한 줄에 하나 · 제목 | 주소 | 메모(선택)</small>')
+      + '<textarea data-k="items" rows="5" placeholder="' + (r.type === 'eval' ? '2026-10-20 | 수행평가 ① 실험 보고서 | 옴의 법칙 | 필기구' : '1차시 학습지 | https://… | 개념 정리') + '">' + esc(listToText(r)) + '</textarea></label>'
+      + '<p class="hint">' + (r.type === 'eval' ? '날짜가 가까우면 학생 화면에 D-7부터 빨갛게 보입니다.' : '주소가 없는 줄은 「준비 중」으로 흐리게 보입니다. 원드라이브·구글 드라이브 공유 링크도 됩니다.') + '</p>';
+  return '<div class="room' + (r.on ? '' : ' off') + '" data-id="' + esc(r.id) + '">'
+    + '<div class="rh"><label class="sw" title="학생에게 보이기"><input type="checkbox" data-k="on"' + (r.on ? ' checked' : '') + ' aria-label="' + esc(r.name) + ' 켜기"><span></span></label>'
+    + '<input type="text" class="emo" data-k="ic" value="' + esc(r.ic) + '" maxlength="4" aria-label="아이콘">'
+    + '<input type="text" class="nm" data-k="name" value="' + esc(r.name) + '" maxlength="14" aria-label="방 이름">'
+    + '<button class="ib" type="button" data-mv="-1" title="위로"' + (i ? '' : ' disabled') + '>▲</button><button class="ib" type="button" data-mv="1" title="아래로"' + (i < C.rooms.length - 1 ? '' : ' disabled') + '>▼</button>'
+    + '<button class="ib" type="button" data-open title="자세히">' + (openId === r.id ? '▾' : '▸') + '</button></div>'
+    + '<div class="rb"' + (openId === r.id ? '' : ' hidden') + '>'
+    + '<label class="f">한 줄 설명<input type="text" data-k="sub" value="' + esc(r.sub) + '" maxlength="30"></label>' + body
+    + '<div class="row"><span class="tag">' + ({ link:'링크 방 — 누르면 새 창으로', list:'목록 방 — 안에 링크 여러 개', eval:'평가 방 — 날짜와 D-day' }[r.type]) + '</span>'
+    + '<button class="ib del" type="button" data-del title="이 방 지우기" style="margin-left:auto">🗑</button></div></div></div>';
+}
+function drawRooms(){
+  $('#rooms').innerHTML = C.rooms.map(roomHTML).join('');
+  const n = C.rooms.filter(r => r.on).length; $('#cnt').textContent = '켠 방 ' + n + '개' + (n > 8 ? ' · 나무는 8그루까지' : '');
+}
+function fillTop(){ ['kick', 't1', 't2', 'sub'].forEach(k => $('#' + k).value = C[k] || ''); }
+
+let tSave;
+function changed(redraw){
+  if(redraw) drawRooms();
+  clearTimeout(tSave); tSave = setTimeout(() => { try { localStorage.setItem(DKEY, JSON.stringify(C)); } catch(e){} }, 300);
+  pushPreview(); $('#out').hidden = true; $('#qr').hidden = true;
+}
+let tPv;
+function pushPreview(){ clearTimeout(tPv); tPv = setTimeout(() => { const w = $('#pv').contentWindow; if(w) w.postMessage({ type:'entrance-cfg', cfg:C, room:openRoomForPreview() }, '*'); }, 120); }
+function openRoomForPreview(){ const r = C.rooms.find(x => x.id === openId); return r && r.on && r.type !== 'link' ? r.id : null; }
+$('#pv').addEventListener('load', pushPreview);
+
+['kick', 't1', 't2', 'sub'].forEach(k => $('#' + k).addEventListener('input', e => { C[k] = e.target.value; changed(); }));
+$('#rooms').addEventListener('input', e => {
+  const el = e.target, box = el.closest('.room'); if(!box) return; const r = C.rooms.find(x => x.id === box.dataset.id), k = el.dataset.k; if(!r || !k) return;
+  if(k === 'on'){ r.on = el.checked; changed(true); return; }
+  if(k === 'items') r.items = textToList(r, el.value); else r[k] = el.value;
+  changed();
+});
+$('#rooms').addEventListener('change', e => { if(e.target.dataset.k === 'url') drawRooms(); });
+$('#rooms').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return; const box = b.closest('.room'), i = C.rooms.findIndex(x => x.id === box.dataset.id);
+  if(b.dataset.mv){ const j = i + +b.dataset.mv; if(j < 0 || j >= C.rooms.length) return; const t = C.rooms[i]; C.rooms[i] = C.rooms[j]; C.rooms[j] = t; changed(true); }
+  else if(b.hasAttribute('data-open')){ openId = openId === box.dataset.id ? null : box.dataset.id; drawRooms(); pushPreview(); }
+  else if(b.hasAttribute('data-del')){ if(!confirm('「' + C.rooms[i].name + '」 방을 지울까요?')) return; C.rooms.splice(i, 1); changed(true); }
+});
+function addRoom(type){ const id = 'r' + Date.now().toString(36);
+  C.rooms.push(type === 'link' ? { id, on:true, type:'link', ic:'🔗', name:'새 링크', sub:'한 줄 설명', url:'' } : { id, on:true, type:'list', ic:'🗂️', name:'새 목록', sub:'한 줄 설명', items:[] });
+  openId = id; changed(true); }
+$('#addLink').addEventListener('click', () => addRoom('link'));
+$('#addList').addEventListener('click', () => addRoom('list'));
+$('#reset').addEventListener('click', () => { if(!confirm('제목과 방을 모두 처음 상태로 되돌릴까요?\n(지금 고친 내용은 사라집니다)')) return; C = EntranceCfg.defaults(); openId = null; fillTop(); changed(true); });
+
+async function studentUrl(){ return new URL('index.html', location.href).href + '#' + await EntranceCfg.pack(C); }
+$('#copy').addEventListener('click', async () => {
+  const u = await studentUrl(); const o = $('#out'); o.hidden = false; o.textContent = u;
+  try { await navigator.clipboard.writeText(u); toast('📋 학생용 링크를 복사했어요 (' + u.length + '자)'); } catch(e){ getSelection().selectAllChildren(o); toast('링크를 선택해 두었어요. Ctrl+C 로 복사하세요'); }
+});
+$('#qrBtn').addEventListener('click', async () => {
+  const u = await studentUrl(), q = $('#qr'); q.hidden = false; q.innerHTML = '';
+  if(u.length > 2300 || typeof QRCode !== 'function'){ q.innerHTML = '<p class="warnline">링크가 ' + u.length + '자라서 QR 에 다 담기지 않아요. 단축 주소를 만들어 QR 로 쓰시거나, HTML 파일로 받아 올려 주세요.</p>'; return; }
+  const box = document.createElement('div'); q.appendChild(box);
+  new QRCode(box, { text:u, width:240, height:240, correctLevel:u.length > 1200 ? QRCode.CorrectLevel.L : QRCode.CorrectLevel.M });
+  const p = document.createElement('p'); p.className = 'hint'; p.textContent = '전자칠판에 띄워 두면 학생들이 휴대폰으로 찍어 들어옵니다.'; q.appendChild(p);
+});
+/* 내려받기: 입구 + 숲 엔진 + 설정을 파일 하나로 */
+$('#dl').addEventListener('click', async () => {
+  try {
+    const get = f => fetch(f, { cache:'no-store' }).then(r => { if(!r.ok) throw new Error(f); return r.text(); });
+    let [html, css, fjs, cjs] = await Promise.all([get('index.html'), get('forest.css'), get('forest.js'), get('cfg.js')]);
+    const cfgJson = JSON.stringify(C).replace(/</g, '\\u003c');
+    html = html.replace('<link rel="stylesheet" href="forest.css">', () => '<style>\n' + css + '\n</style>')
+      .replace('<script src="cfg.js"><\/script>', () => '<script>window.ENTRANCE_CONFIG = ' + cfgJson + ';<\/script>\n<script>\n' + cjs + '\n<\/script>')
+      .replace('<script src="forest.js"><\/script>', () => '<script>\n' + fjs + '\n<\/script>');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type:'text/html' }));
+    a.download = ((C.t2 || '과학시간') + '_입구.html').replace(/[\\/:*?"<>|\s]+/g, '_'); a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+    toast('⬇️ 파일 하나로 받았어요. 그대로 열어도 되고, 학교 홈페이지·GitHub Pages 에 올려도 됩니다');
+  } catch(e){ alert('파일을 만들지 못했어요 — 이 페이지를 인터넷 주소(https://…)로 열었는지 확인해 주세요.\n' + e.message); }
+});
+$('#pvbar').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#pvbar button').forEach(x => x.classList.toggle('on', x === b));
+  const f = $('#pv'); f.style.width = b.dataset.w ? b.dataset.w + 'px' : '100%'; f.style.margin = b.dataset.w ? '0 auto' : ''; });
+
+(async function(){
+  let c = null;
+  try { c = await EntranceCfg.unpack(location.hash); } catch(e){}
+  if(!c){ try { c = JSON.parse(localStorage.getItem(DKEY) || 'null'); } catch(e){} }
+  C = EntranceCfg.fix(c || EntranceCfg.defaults());
+  if(location.hash) history.replaceState(null, '', location.pathname);
+  fillTop(); drawRooms(); pushPreview();
+})();
+</script>
+</body>
+</html>

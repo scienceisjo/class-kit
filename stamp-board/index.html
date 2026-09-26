@@ -1366,7 +1366,7 @@ function renderQHint(id){
 function useQ(i){
   var ids = Object.keys(S.selSt); if(ids.length!==1) return;
   var q = (_qCache[ids[0]]||[])[i]; if(!q) return;
-  var txt = String(q.text||'').replace(/s+/g,' ').trim();
+  var txt = String(q.text||'').replace(/\s+/g,' ').trim();
   if(txt.length > 120) txt = txt.slice(0,120) + '…';
   var ta = $('behIn');
   ta.value = '「' + txt + '」라는 질문을 제기하고 ';
